@@ -49,9 +49,14 @@ public class DrawTexture extends JPanel implements ActionListener, KeyListener {
 
 		// fill figures
 		figures.paintFigure(g, PosX, PosY);
+		int b = 0;
+		try {
+			for (Integer key : hashmap.keySet()) {
+				figures.paintFigure(g, key - b, hashmap.get(key));
+				b++;
+			}
+		} catch (Exception EX) {
 
-		for (Integer key : hashmap.keySet()) {
-			figures.paintFigure(g, key, hashmap.get(key));
 		}
 	}
 
@@ -81,17 +86,21 @@ public class DrawTexture extends JPanel implements ActionListener, KeyListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		for (Integer key : hashmap.keySet()) {
-			if (new Rectangle(key, hashmap.get(key), 20, 20).intersects(new Rectangle(PosX, PosY, 20, 20))) {
-				PosY = hashmap.get(key) - 21;
+		try {
+			for (Integer key : hashmap.keySet()) {
+				if (new Rectangle(key, hashmap.get(key), 10, 10).intersects(new Rectangle(PosX, PosY, 20, 20))) {
+					PosY = hashmap.get(key) - 21;
 
-				hashmap.put(PosX + a, PosY);
+					hashmap.put(PosX + a, PosY);
 
-				PosX = 10;
-				PosY = 10;
+					PosX = 10;
+					PosY = 10;
 
-				a++;
+					a++;
+				}
 			}
+		} catch (Exception ex) {
+
 		}
 		if (PosY > 440) {
 			PosY = 440;
