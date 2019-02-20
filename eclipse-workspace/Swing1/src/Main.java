@@ -16,7 +16,7 @@ public class Main {
 
 	public static void setImage(URL url) {
 		try {
-			ImageIO.read(url);
+			img = ImageIO.read(url);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -24,7 +24,7 @@ public class Main {
 
 	public static void setImage(File file) {
 		try {
-			ImageIO.read(file);
+			img = ImageIO.read(file);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
