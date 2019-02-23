@@ -12,7 +12,7 @@ public class Server implements Runnable {
 	private static Socket connection;
 	private static ObjectOutputStream output;
 	private static ObjectInputStream input;
-	static private ServerSocket server;
+	private static ServerSocket server;
 
 	public static void main(String[] args) {
 
@@ -26,7 +26,7 @@ public class Server implements Runnable {
 				connection = server.accept();
 				output = new ObjectOutputStream(connection.getOutputStream());
 				input = new ObjectInputStream(connection.getInputStream());
-				output.writeObject("msg" + (String)input.readObject());
+				output.writeObject("msg" + (String) input.readObject());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
