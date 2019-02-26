@@ -32,6 +32,7 @@ public class Main {
 
 	public static void saveImage(File file, String format) {
 		try {
+			format = "jpg";
 			ImageIO.write(img, format, file);
 		} catch (IOException e) {
 			e.printStackTrace();

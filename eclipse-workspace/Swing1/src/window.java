@@ -5,6 +5,7 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -23,7 +24,7 @@ public class window extends JFrame {
 	private JTabbedPane tabbedPane;
 	private JTextArea txtrEnterUrlHere;
 	private JButton btnNewButton;
-	private JButton btnNewButton_1;
+	private JButton getFile;
 	private Choice choice;
 	private JLabel lblFormat;
 	private JButton btnViewImage;
@@ -69,9 +70,17 @@ public class window extends JFrame {
 		btnNewButton.setBounds(10, 11, 135, 31);
 		pane2.add(btnNewButton);
 
-		btnNewButton_1 = new JButton("New button");
-		btnNewButton_1.setBounds(454, 11, 135, 31);
-		pane2.add(btnNewButton_1);
+		getFile = new JButton("Get file");
+		getFile.setBounds(454, 11, 135, 31);
+		getFile.addActionListener(e -> {
+			JFileChooser chooser = new JFileChooser();
+			int reply = chooser.showOpenDialog(null);
+			if (reply == JFileChooser.APPROVE_OPTION) {
+				Main.setImage(chooser.getSelectedFile());
+			}
+		});
+
+		pane2.add(getFile);
 		pane1 = new JPanel(null);
 		tabbedPane.addTab("Tab 2", pane1);
 
@@ -87,7 +96,8 @@ public class window extends JFrame {
 
 		btnViewImage = new JButton("view");
 		btnViewImage.addActionListener(e -> {
-			if(Main.getImg() == null) return;
+			if (Main.getImg() == null)
+				return;
 			imageLabel.setIcon(new ImageIcon(Main.getImg()));
 			imageLabel.updateUI();
 		});
@@ -114,12 +124,24 @@ public class window extends JFrame {
 
 		mntmSaveImage = new JMenuItem("save image");
 		mnFile.add(mntmSaveImage);
-
+		mntmSaveImage.addActionListener(e -> {
+			JFileChooser chooser = new JFileChooser();
+			int reply = chooser.showSaveDialog(null);
+			if(reply == JFileChooser.APPROVE_OPTION) {
+				Main.saveImage(chooser.getSelectedFile(), choice.getSelectedItem());
+			}
+		});
+		
+		
 		mnOptions = new JMenu("Options");
 		menuBar.add(mnOptions);
 
 		mntmExit = new JMenuItem("Exit");
 		mnOptions.add(mntmExit);
+		mntmExit.addActionListener(e -> {
+			System.exit(0);
+		});
+
 		setVisible(true);
 	}
 }
