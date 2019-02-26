@@ -21,7 +21,7 @@ public class ServerMain {
 			@Override
 			public void run() {
 				try {
-					server = new ServerSocket(8888, 10);
+					server = new ServerSocket(8888, 10, InetAddress.getByName("tcp.url.server"));
 					while (true) {
 						connection = server.accept();
 						outputStream = new ObjectOutputStream(connection.getOutputStream());

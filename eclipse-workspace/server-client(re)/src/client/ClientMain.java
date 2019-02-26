@@ -4,9 +4,9 @@ import java.awt.FlowLayout;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -20,7 +20,7 @@ public class ClientMain extends JFrame implements Runnable{
 	static private Socket connection;
 	static private ObjectOutputStream output;
 	static private ObjectInputStream input;
-	
+	static private DatagramSocket sock;
 	
 	public static void main(String[] args) {
 		new Thread(new ClientMain("testName")).start();
@@ -49,12 +49,12 @@ public class ClientMain extends JFrame implements Runnable{
 	public void run() {
 		try {
 			while (true) {
-				connection = new Socket("localhost", 8888);
+				connection = new Socket("tcp.url.server", 8888);
 				output = new ObjectOutputStream(connection.getOutputStream());
 				input = new ObjectInputStream(connection.getInputStream());
 				JOptionPane.showMessageDialog(this, (String)input.readObject());// this or null
 			}
-		} catch (Exception e) {
+		} catch (Exception e) { 
 			e.printStackTrace();
 		}
 
