@@ -44,7 +44,7 @@ public class Window extends JFrame {
 		JButton removeButton = new JButton("Remove");
 		removeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (table.getSelectedRow() == -1 && Main.persons.size() > 0)
+				if (table.getSelectedRow() == -1 || Main.persons.size() <= 0)
 					return;
 				Main.persons.remove(table.getSelectedRow());
 				table.updateUI();
