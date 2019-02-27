@@ -5,8 +5,9 @@ public class Main {
 
 	public static void main(String[] args) {
 		w = new Window();
-		for(int i=0;i<10;i++)
-			w.addElements("dfsf" + i);
-		
+		for(int i=0;i<1000;i+=13) {
+			w.addElements("Element of: " + i);
+		}
+		w.UpdateUI();
 	}
 }
