@@ -7,36 +7,22 @@ import java.util.*;
 
 public class Map2D {
 
-   static HashMap<Pair<Integer, Integer>, Integer> map;
+   static HashMap<Pair<Integer, Integer>, ObjectValues> map;
 
 
 
     public Map2D(){
-        map = new HashMap<Pair<Integer, Integer>, Integer>();
+        map = new HashMap<Pair<Integer, Integer>,ObjectValues>();
         Logics.fillRandom(7,7, 5, map);
     }
 
     public void RenderMap(Graphics graphics){
         for(int i = 0; i < 7; i++){
             for(int j = 0; j < 7; j++) {
-                switch (map.get(new Pair<Integer, Integer>(i, j))){
-                    case 0:
-                        graphics.setColor(Color.CYAN);
-                        break;
-                    case 1:
-                        graphics.setColor(Color.YELLOW);
-                        break;
-                    case 2:
-                        graphics.setColor(Color.RED);
-                        break;
-                    case 3:
-                        graphics.setColor(Color.ORANGE);
-                        break;
-                    case 4:
-                        graphics.setColor(Color.GREEN);
-                        break;
-                }
-                graphics.fillOval(i*80+20, j*80+50, 50, 50);
+                graphics.setColor(map.get(new Pair<Integer, Integer>(i, j)).color);
+                map.get(new Pair<Integer, Integer>(i, j)).PosX =i*80+30;
+                map.get(new Pair<Integer, Integer>(i, j)).PosY =j*80+40;
+                graphics.fillOval(map.get(new Pair<Integer, Integer>(i, j)).PosX, map.get(new Pair<Integer, Integer>(i, j)).PosY, 50, 50);
             }
         }
     }

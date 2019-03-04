@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
@@ -53,6 +55,9 @@ public class RenderWindow extends JFrame implements MouseMotionListener, ActionL
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
+        //why action performed not works
+
         System.out.println(123);
     }
 
@@ -63,7 +68,7 @@ public class RenderWindow extends JFrame implements MouseMotionListener, ActionL
 
     @Override
     public void keyPressed(KeyEvent e) {
-
+        repaint();
     }
 
     @Override
@@ -81,6 +86,19 @@ public class RenderWindow extends JFrame implements MouseMotionListener, ActionL
     public void mousePressed(MouseEvent e) {
         MousePosX = e.getX();
         MousePosY = e.getY();
+
+
+
+        for(int i = 0; i < 7; i++){
+            for(int j = 0; j < 7; j++) {
+                int x = Map2D.map.get(new Pair<Integer, Integer>(i, j)).PosX;
+                int y = Map2D.map.get(new Pair<Integer, Integer>(i, j)).PosY;
+                Rectangle rect = new Rectangle(x,    y, 30, 30);
+                if(new Rectangle(MousePosX, MousePosY, 30,30).intersects(rect)){
+                    Map2D.map.get(new Pair<Integer, Integer>(i, j)).PosX +=MousePosX;
+                }
+            }
+        }
         repaint();
     }
 
