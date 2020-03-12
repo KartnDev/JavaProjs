@@ -1,7 +1,9 @@
 package com.company.Core;
 
 import com.company.Core.Utils.RequestTypeIdentifier;
-import com.company.Workers.Responser;
+import com.company.Handlers.Handler;
+import com.company.Handlers.HttpGetHandler;
+import com.company.HttpWorkers.Responser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -79,12 +81,19 @@ public class Server {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        var typer = new RequestTypeIdentifier(new String(buff));
-                        String httpMethod = typer.getMethodType();
-                        String urlPath = typer.getRequestPath();
+                        var typeIdentifier = new RequestTypeIdentifier(new String(buff));
+                        String httpMethod = typeIdentifier.getMethodType();
+                        String urlPath = typeIdentifier.getRequestPath();
 
-                        Responser responser = new Responser();
-                        responser.sendFile(finalHandle, urlPath);
+                        Handler httpHandler = null;
+
+                        if(httpMethod.contains("GET")){
+                            httpHandler = new HttpGetHandler(urlPath, finalHandle);
+                        } else if(httpMethod == "POST"){
+                            //Handle POST method
+                        }
+
+                        httpHandler.handleResponse();
 
                     });
                     requestHandler.start();
