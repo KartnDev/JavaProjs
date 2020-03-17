@@ -1,0 +1,9 @@
+Where thown an exception .. Time: 2020-03-18 at 00:21:17:2117 MSK
+ stackTrace were taken: java.base/java.net.PlainSocketImpl.socketAccept(Native Method)
+java.base/java.net.AbstractPlainSocketImpl.accept(AbstractPlainSocketImpl.java:458)
+java.base/java.net.ServerSocket.implAccept(ServerSocket.java:556)
+java.base/java.net.ServerSocket.accept(ServerSocket.java:524)
+com.KartonDCP.Core.Server.lambda$startListen$1(Server.java:99)
+java.base/java.lang.Thread.run(Thread.java:835)
+ and message Socket closed
+

@@ -87,6 +87,7 @@ public class Server {
             serverSocket.bind(new InetSocketAddress(InetAddress.getByName(ipAddr), port));
         } catch (IOException e) {
             logger.logException(e);
+            return false;
         }
 
 
@@ -115,9 +116,7 @@ public class Server {
                         var requestMsg = new String(buff);
 
                         if(requestMsg.contains(secretKey) && requestMsg.contains("STOP")){
-                            running = false;
-                            System.out.println("EXITING...");
-                            return;
+                            stop();
                         }
 
                         var typeIdentifier = new RequestTypeIdentifier(requestMsg);
@@ -138,12 +137,28 @@ public class Server {
                     requestHandler.start();
                 } catch (IOException e) {
                     logger.logException(e);
+
                 }
+
             }
         });
         requestListenerT.start();
         return running;
     }
+    public void stop()
+    {
+        if (running)
+        {
+            System.out.println("Shutdowning the server!");
+            running = false;
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                logger.logException(e);
+            }
+            serverSocket = null;
+        }
 
+    }
 
 }

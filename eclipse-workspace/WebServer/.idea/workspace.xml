@@ -3,22 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="395866c8-6e6d-427c-818d-6fa869efc3df" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/Configurations/ConfigModel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WebServer/Configurations/ConfigModel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/Configurations/config.JSON" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WebServer/Configurations/config.JSON" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Core/Server.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Core/Utils/RequestTypeIdentifier.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Handlers/Handler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Handlers/HttpGetHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/HttpWorkers/Responser.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Main.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Configurations/ConfigModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Configurations/ConfigModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Configurations/config.JSON" beforeDir="false" afterPath="$PROJECT_DIR$/src/Configurations/config.JSON" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/Core/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/KartonDCP/Core/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/Core/Utils/RequestTypeIdentifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/KartonDCP/Core/Utils/RequestTypeIdentifier.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/Handlers/Handler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/KartonDCP/Handlers/Handler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/Handlers/HttpGetHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/KartonDCP/Handlers/HttpGetHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/HttpWorkers/Responser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/KartonDCP/HttpWorkers/Responder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Logs/Logs.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Logs/Logs.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/KartonDCP/Core/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/KartonDCP/Core/Server.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -113,7 +99,7 @@
       <workItem from="1584018518109" duration="6351000" />
       <workItem from="1584032794672" duration="7924000" />
       <workItem from="1584453141133" duration="1744000" />
-      <workItem from="1584454907093" duration="11261000" />
+      <workItem from="1584454907093" duration="11600000" />
     </task>
     <servers />
   </component>
@@ -147,26 +133,26 @@
     </state>
     <state x="740" y="264" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1583955047785" />
     <state x="781" y="294" width="735" height="520" key="FileChooserDialogImpl/67.27.1853.1053@67.27.1853.1053" timestamp="1584455027832" />
-    <state width="1807" height="182" key="GridCell.Tab.0.bottom" timestamp="1584479778754">
+    <state width="1807" height="182" key="GridCell.Tab.0.bottom" timestamp="1584480026659">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1860" height="344" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1584041173945" />
-    <state width="1807" height="182" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1584479778754" />
-    <state width="1807" height="182" key="GridCell.Tab.0.center" timestamp="1584479778754">
+    <state width="1807" height="182" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1584480026659" />
+    <state width="1807" height="182" key="GridCell.Tab.0.center" timestamp="1584480026659">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1860" height="344" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1584041173945" />
-    <state width="1807" height="182" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1584479778754" />
-    <state width="1807" height="182" key="GridCell.Tab.0.left" timestamp="1584479778753">
+    <state width="1807" height="182" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1584480026659" />
+    <state width="1807" height="182" key="GridCell.Tab.0.left" timestamp="1584480026657">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1860" height="344" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1584041173945" />
-    <state width="1807" height="182" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1584479778753" />
-    <state width="1807" height="182" key="GridCell.Tab.0.right" timestamp="1584479778754">
+    <state width="1807" height="182" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1584480026657" />
+    <state width="1807" height="182" key="GridCell.Tab.0.right" timestamp="1584480026659">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1860" height="344" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1584041173945" />
-    <state width="1807" height="182" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1584479778754" />
+    <state width="1807" height="182" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1584480026659" />
     <state width="1354" height="319" key="GridCell.Tab.1.bottom" timestamp="1584459205214">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
