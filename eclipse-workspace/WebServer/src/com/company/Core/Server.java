@@ -1,14 +1,16 @@
 package com.company.Core;
-
+import Configurations.ConfigModel;
 import com.company.Core.Utils.RequestTypeIdentifier;
 import com.company.Handlers.Handler;
 import com.company.Handlers.HttpGetHandler;
-import com.company.HttpWorkers.Responser;
+import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.*;
+import java.io.*;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.file.Files;
 
 public class Server {
 
@@ -19,6 +21,7 @@ public class Server {
     private int numConnections;
     private int port;
     private String ipAddr;
+    private String defualtContentPath;
 
     private boolean running = false;
 
@@ -26,9 +29,30 @@ public class Server {
     private ServerSocket serverSocket;
 
     public Server(int port, String ipAddr, int numConnections) throws IOException {
+
         this.ipAddr = ipAddr;
         this.port = port;
         this.numConnections = numConnections;
+
+
+        if(port == -1){
+            String current = new java.io.File( "." ).getCanonicalPath();
+            Gson gson = new Gson();
+            File file = new File(current + "/src/Configurations/config.JSON");
+            var strJSON = Files.readString(file.toPath());
+
+            var schema = gson.fromJson(strJSON, ConfigModel.class);
+
+            this.port = schema.port;
+
+            if(schema.localPath) {
+                this.defualtContentPath = current + schema.path;
+            } else{
+              this.defualtContentPath = schema.path;
+            }
+        }
+
+
 
         serverSocket = new ServerSocket();
     }
@@ -88,7 +112,7 @@ public class Server {
                         Handler httpHandler = null;
 
                         if(httpMethod.contains("GET")){
-                            httpHandler = new HttpGetHandler(urlPath, finalHandle);
+                            httpHandler = new HttpGetHandler(urlPath, finalHandle, this.defualtContentPath);
                         } else if(httpMethod == "POST"){
                             //Handle POST method
                         }

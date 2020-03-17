@@ -7,10 +7,11 @@ import java.nio.file.Files;
 public class Responser{
 
     private Socket clientSocket = null;
+    private String currentContentPath;
 
-
-    public Responser(Socket clientSocket){
+    public Responser(Socket clientSocket, String currentContentPath){
         this.clientSocket = clientSocket;
+        this.currentContentPath = currentContentPath;
     }
 
 
@@ -31,8 +32,8 @@ public class Responser{
 
     public void sendFile(String fileName, String status){
         var file = new File(
-                "C:\\Users\\dmutp\\IdeaProjects\\WebServer\\src\\com\\company\\Content\\" +
-                        fileName.replace('/', '\\'));
+                currentContentPath + "/" +
+                        fileName);
 
         try {
             sendResponse(file.length(),
