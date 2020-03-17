@@ -1,4 +1,4 @@
-package com.company.Core.Utils;
+package com.KartonDCP.Core.Utils;
 
 public class RequestTypeIdentifier {
 

@@ -1,5 +1,9 @@
 {
-  "port": 1337,
-  "localPath": true,
-  "path": "/Content"
+  "Port": 1337,
+  "IP": "localhost",
+  "NumConnections": 6000,
+  "LocalPath": true,
+  "Path": "/Content",
+  "LogsPath": "/Logs/Logs.txt",
+  "SecretKey": "9QWUJDFo9sjsa8dsgi9ikd307u2ad8p9a9QW9JFDiufowqsDFJFD8908dvfojfoo0p8jspoy38qojop"
 }

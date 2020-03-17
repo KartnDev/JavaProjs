@@ -2,26 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="395866c8-6e6d-427c-818d-6fa869efc3df" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/com_google_code_gson_gson_2_8_6.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebServer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/WebServer.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Content/Error.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Content/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Core/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WebServer/com/company/Core/Server.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Core/Utils/RequestTypeIdentifier.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WebServer/com/company/Core/Utils/RequestTypeIdentifier.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Handlers/Handler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WebServer/com/company/Handlers/Handler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Handlers/HttpGetHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WebServer/com/company/Handlers/HttpGetHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/HttpWorkers/Responser.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WebServer/com/company/HttpWorkers/Responser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WebServer/com/company/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/Content/Error.html" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Error.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/Content/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Content/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/Core/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/company/Core/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/Handlers/HttpGetHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/company/Handlers/HttpGetHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/HttpWorkers/Responser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/company/HttpWorkers/Responser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/company/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/WebServer/Configurations/ConfigModel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WebServer/Configurations/ConfigModel.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/WebServer/Configurations/config.JSON" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WebServer/Configurations/config.JSON" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Core/Server.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Core/Utils/RequestTypeIdentifier.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Handlers/Handler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Handlers/HttpGetHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/HttpWorkers/Responser.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/WebServer/com/company/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Configurations/ConfigModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Configurations/ConfigModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Configurations/config.JSON" beforeDir="false" afterPath="$PROJECT_DIR$/src/Configurations/config.JSON" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/company/Core/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/KartonDCP/Core/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/company/Core/Utils/RequestTypeIdentifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/KartonDCP/Core/Utils/RequestTypeIdentifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/company/Handlers/Handler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/KartonDCP/Handlers/Handler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/company/Handlers/HttpGetHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/KartonDCP/Handlers/HttpGetHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/company/HttpWorkers/Responser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/KartonDCP/HttpWorkers/Responder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/company/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,8 +34,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="HTML File" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -78,9 +75,14 @@
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true">
-      <option name="MAIN_CLASS_NAME" value="com.company.Main" />
+      <option name="MAIN_CLASS_NAME" value="Main" />
       <module name="WebServer" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <RunnerSettings RunnerId="Run" />
@@ -111,7 +113,7 @@
       <workItem from="1584018518109" duration="6351000" />
       <workItem from="1584032794672" duration="7924000" />
       <workItem from="1584453141133" duration="1744000" />
-      <workItem from="1584454907093" duration="2901000" />
+      <workItem from="1584454907093" duration="11261000" />
     </task>
     <servers />
   </component>
@@ -131,35 +133,40 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="724" y="392" key="#com.intellij.ide.actions.ChooseComponentsToExportDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1583955051609" />
-    <state x="765" y="229" key="#com.intellij.ide.util.MemberChooser" timestamp="1583957432451">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="805" y="259" width="374" height="633" key="#com.intellij.ide.util.MemberChooser" timestamp="1584475636913">
+      <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="765" y="229" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1583957432451" />
+    <state x="805" y="259" width="374" height="633" key="#com.intellij.ide.util.MemberChooser/67.27.1853.1053@67.27.1853.1053" timestamp="1584475636913" />
+    <state x="614" y="27" width="748" height="1053" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1584460199768">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="614" y="27" width="748" height="1053" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1584460199768" />
     <state x="781" y="294" width="735" height="520" key="FileChooserDialogImpl" timestamp="1584455027832">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="740" y="264" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1583955047785" />
     <state x="781" y="294" width="735" height="520" key="FileChooserDialogImpl/67.27.1853.1053@67.27.1853.1053" timestamp="1584455027832" />
-    <state width="1354" height="258" key="GridCell.Tab.0.bottom" timestamp="1584459984464">
+    <state width="1807" height="182" key="GridCell.Tab.0.bottom" timestamp="1584479778754">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1860" height="344" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1584041173945" />
-    <state width="1354" height="258" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1584459984464" />
-    <state width="1354" height="258" key="GridCell.Tab.0.center" timestamp="1584459984463">
+    <state width="1807" height="182" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1584479778754" />
+    <state width="1807" height="182" key="GridCell.Tab.0.center" timestamp="1584479778754">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1860" height="344" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1584041173945" />
-    <state width="1354" height="258" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1584459984463" />
-    <state width="1354" height="258" key="GridCell.Tab.0.left" timestamp="1584459984463">
+    <state width="1807" height="182" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1584479778754" />
+    <state width="1807" height="182" key="GridCell.Tab.0.left" timestamp="1584479778753">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1860" height="344" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1584041173945" />
-    <state width="1354" height="258" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1584459984463" />
-    <state width="1354" height="258" key="GridCell.Tab.0.right" timestamp="1584459984464">
+    <state width="1807" height="182" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1584479778753" />
+    <state width="1807" height="182" key="GridCell.Tab.0.right" timestamp="1584479778754">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1860" height="344" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1584041173945" />
-    <state width="1354" height="258" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1584459984464" />
+    <state width="1807" height="182" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1584479778754" />
     <state width="1354" height="319" key="GridCell.Tab.1.bottom" timestamp="1584459205214">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>

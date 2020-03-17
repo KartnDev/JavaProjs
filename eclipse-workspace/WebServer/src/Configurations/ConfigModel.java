@@ -1,7 +1,11 @@
 package Configurations;
 
 public class ConfigModel {
-    public int port;
-    public Boolean localPath;
-    public String path;
+    public int Port;
+    public String IP;
+    public int NumConnections;
+    public Boolean LocalPath;
+    public String Path;
+    public String LogsPath;
+    public String SecretKey;
 }

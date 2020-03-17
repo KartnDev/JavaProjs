@@ -1,6 +1,6 @@
-package com.company.Handlers;
+package com.KartonDCP.Handlers;
 
-import com.company.HttpWorkers.Responser;
+import com.KartonDCP.HttpWorkers.Responder;
 
 import java.io.File;
 import java.net.Socket;
@@ -11,6 +11,8 @@ public class HttpGetHandler implements Handler{
     private Socket processedSocket; // Client Socket
     private String contentPath;
 
+
+
     public HttpGetHandler(String response, Socket processedSocket, String currentContentPath){
         this.processedSocket = processedSocket;
         this.response = response;
@@ -20,7 +22,7 @@ public class HttpGetHandler implements Handler{
 
     @Override
     public void handleResponse() {
-        Responser responser = new Responser(processedSocket, contentPath);
+        Responder responser = new Responder(processedSocket, contentPath);
 
         boolean isHome = response.contains("/") && response.length() == 1;
 

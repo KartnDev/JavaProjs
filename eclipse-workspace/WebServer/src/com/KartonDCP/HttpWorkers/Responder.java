@@ -1,15 +1,20 @@
-package com.company.HttpWorkers;
+package com.KartonDCP.HttpWorkers;
+
+import com.KartonDCP.Logger.EventLogger;
+import com.KartonDCP.Logger.ILogger;
 
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 
-public class Responser{
+public class Responder {
 
     private Socket clientSocket = null;
     private String currentContentPath;
 
-    public Responser(Socket clientSocket, String currentContentPath){
+    private ILogger logger = new EventLogger();
+
+    public Responder(Socket clientSocket, String currentContentPath){
         this.clientSocket = clientSocket;
         this.currentContentPath = currentContentPath;
     }
@@ -25,7 +30,7 @@ public class Responser{
                                 + "Content-Type: " + contentType + "\r\n\r\n").getBytes("UTF-8"));
             clientSocket.getOutputStream().write(byteContent);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.logException(e);
         }
     }
 
@@ -34,14 +39,13 @@ public class Responser{
         var file = new File(
                 currentContentPath + "/" +
                         fileName);
-
         try {
+
             sendResponse(file.length(),
                     "200 OK", "text/html",
                     Files.readAllBytes(file.toPath()));
-
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.logException(e);
         }
     }
 
@@ -61,7 +65,7 @@ public class Responser{
             try {
                 clientSocket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.logException(e);
             }
         }
     }

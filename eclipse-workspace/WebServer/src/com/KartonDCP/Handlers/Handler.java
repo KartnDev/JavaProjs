@@ -1,6 +1,4 @@
-package com.company.Handlers;
-
-import java.net.Socket;
+package com.KartonDCP.Handlers;
 
 public interface Handler{
     void handleResponse();
