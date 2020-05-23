@@ -1,3 +1,4 @@
+import com.KartonDCP.MobileSever.MobileServer;
 import org.hibernate.HibernateException;
 import org.hibernate.Metamodel;
 import org.hibernate.query.Query;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 public class Main {
     public static void main(final String[] args) throws Exception {
-
+        MobileServer server = new MobileServer();
+        server.startServing();
     }
 }

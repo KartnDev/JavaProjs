@@ -1,6 +1,8 @@
 package com.KartonDCP.MobileSever;
 
 import com.KartonDCP.MobileSever.DirectoryReader.DirReader;
+import com.KartonDCP.MobileSever.Handler.MobileCHandler;
+import com.KartonDCP.MobileSever.Handler.Handler;
 import com.KartonDCP.MobileSever.Utils.Exceptions.BadConfigException;
 import com.KartonDCP.MobileSever.Utils.ServerEndPoint;
 import com.KartonDCP.DatabaseWorker.DbConfig;
@@ -14,10 +16,11 @@ import java.util.concurrent.Executors;
 
 public class MobileServer {
 
-    private final int MAX_T = 3;
+    private static final int MAX_T = 3;
 
-    private ServerEndPoint endPoint;
-    private DbConfig dbConfig;
+    private final ServerEndPoint endPoint;
+    private final DbConfig dbConfig;
+    private final String token;
 
     private volatile ServerSocket server;
     private volatile boolean serverRunStatus;
@@ -26,6 +29,7 @@ public class MobileServer {
         final DirReader dirReader = new DirReader();
         endPoint = dirReader.getEndPoint();
         dbConfig = dirReader.getDbConfig();
+        token = dirReader.getAppToken();
 
         server = new ServerSocket();
 
@@ -53,9 +57,17 @@ public class MobileServer {
         while (serverRunStatus){
             try {
                 var client = server.accept();
-                pool.execute(() -> {
 
+                pool.execute(() -> {
+                    Handler handler = new MobileCHandler(client, token);
+                    try {
+                        handler.HandleSync();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 });
+
+
             } catch (IOException e) {
                 //TODO Cannot accept client
             } catch (Exception e){

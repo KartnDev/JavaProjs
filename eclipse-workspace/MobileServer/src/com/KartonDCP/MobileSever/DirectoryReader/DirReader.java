@@ -91,7 +91,7 @@ public class DirReader {
         }
     }
 
-    private String getAppToken() throws BadConfigException {
+    public String getAppToken() throws BadConfigException {
         var endPointMap = cfg.serverEndPoint;
         if(endPointMap.containsKey("appToken")){
             return endPointMap.get("appToken");
