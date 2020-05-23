@@ -1,7 +1,7 @@
 package com.KartonDCP.MobileSever.DirectoryReader;
 
 import Configurations.ConfigModel;
-import com.KartonDCP.DatabaseWorker.DbConfig;
+import com.KartonDCP.DatabaseWorker.Config.DbConfig;
 import com.KartonDCP.MobileSever.Utils.Exceptions.BadConfigException;
 import com.KartonDCP.MobileSever.Utils.ServerEndPoint;
 import com.google.gson.Gson;

@@ -1,4 +1,6 @@
 package com.KartonDCP.MobileSever.ProtocolSDK;
 
-public class ProtocolMethod {
+public enum  ProtocolMethod {
+    Register,
+    BadMethod
 }

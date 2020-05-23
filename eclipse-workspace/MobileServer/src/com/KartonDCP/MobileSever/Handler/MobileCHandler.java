@@ -1,6 +1,9 @@
 package com.KartonDCP.MobileSever.Handler;
 
 import com.KartonDCP.Concurent.Utils.Priority;
+import com.KartonDCP.MobileSever.ProtocolSDK.ProtocolMethod;
+import com.KartonDCP.MobileSever.ProtocolSDK.ProtocolParser;
+import com.KartonDCP.MobileSever.Utils.Exceptions.InvalidRequestException;
 import com.jcabi.aspects.Async;
 
 import java.io.IOException;
@@ -18,29 +21,45 @@ public class MobileCHandler implements Handler{
     }
 
     @Override
-    public boolean HandleSync() throws IOException {
+    public boolean handleSync() throws IOException, InvalidRequestException {
         var inputStream = clientSocket.getInputStream();
         byte[] byteArray = inputStream.readAllBytes();
 
         String request = new String(byteArray);
 
-        return false;
+        final var requestParser = new ProtocolParser(request, token);
+
+        var method = requestParser.getMethodName();
+        var args = requestParser.getArgs();
+
+        switch (method){
+            case Register -> {
+
+            }
+            case BadMethod -> {
+                return false;
+            }
+        }
+
+
+
+        return false; // NEVER DOES HERE...
     }
 
 
     @Async
     @Override
-    public Future<Long> HandleAsync(Priority priority) {
+    public Future<Long> handleAsync(Priority priority) {
         return null;
     }
 
     @Override
-    public boolean Cancel() {
+    public boolean cancel() {
         return false;
     }
 
     @Override
-    public void HandleCurrentAndStop() {
+    public void candleCurrentAndStop() {
 
     }
 }

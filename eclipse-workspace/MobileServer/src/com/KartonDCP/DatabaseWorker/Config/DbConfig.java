@@ -1,4 +1,4 @@
-package com.KartonDCP.DatabaseWorker;
+package com.KartonDCP.DatabaseWorker.Config;
 
 public class DbConfig {
     private final String userRoot;

@@ -4,8 +4,9 @@ import com.KartonDCP.MobileSever.DirectoryReader.DirReader;
 import com.KartonDCP.MobileSever.Handler.MobileCHandler;
 import com.KartonDCP.MobileSever.Handler.Handler;
 import com.KartonDCP.MobileSever.Utils.Exceptions.BadConfigException;
+import com.KartonDCP.MobileSever.Utils.Exceptions.InvalidRequestException;
 import com.KartonDCP.MobileSever.Utils.ServerEndPoint;
-import com.KartonDCP.DatabaseWorker.DbConfig;
+import com.KartonDCP.DatabaseWorker.Config.DbConfig;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -61,8 +62,12 @@ public class MobileServer {
                 pool.execute(() -> {
                     Handler handler = new MobileCHandler(client, token);
                     try {
-                        handler.HandleSync();
+                        handler.handleSync();
                     } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InvalidRequestException e){
+                        e.printStackTrace();
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });

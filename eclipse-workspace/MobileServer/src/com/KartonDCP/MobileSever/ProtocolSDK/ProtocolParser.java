@@ -1,5 +1,9 @@
 package com.KartonDCP.MobileSever.ProtocolSDK;
 
+import com.KartonDCP.MobileSever.Utils.Exceptions.InvalidRequestException;
+import com.KartonDCP.MobileSever.Utils.Exceptions.TokenException;
+
+import java.util.HashMap;
 import java.util.Map;
 
 public class ProtocolParser {
@@ -7,36 +11,56 @@ public class ProtocolParser {
     private final String token;
     private String[] split;
 
-    public ProtocolParser(String requestStr, String token){
-        this.requestStr = requestStr.trim().replace(" ", "")
+    public ProtocolParser(String requestStr, String token) throws InvalidRequestException {
+        this.requestStr = requestStr
+                .trim()
+                .replace(" ", "")
                 .replace("\n", "")
-                .replace("\t", "");
+                .replace("\t", "")
+                .toLowerCase();
         this.token = token;
 
-        if(!correctFormat()){
-            throw new
+        if (!correctFormat()) {
+            throw new InvalidRequestException("Cannot recognize request format");
         }
-
+        if (!split[0].equals(token)) {
+            throw new TokenException("Client have no key token!");
+        }
     }
 
-    public boolean correctFormat(){
-        if(requestStr.contains("?")){
+    private boolean correctFormat() {
+        if (requestStr.contains("?")) {
             split = requestStr.split("/?");
-            return split.length == 3 && split[0].equals(token);
-        }
-        else {
+            return split.length == 3;
+        } else {
             return false;
         }
 
     }
 
 
-    public ProtocolMethod getMethodName(){
-        if(requestStr.contains("?")){
-
-        }
+    public ProtocolMethod getMethodName() {
+        ProtocolMethod title = switch (split[1]) {
+            case "register" -> ProtocolMethod.Register;
+            default -> ProtocolMethod.BadMethod;
+        };
+        return title;
     }
-    public Map<String, String> getArgs(){
 
+    public Map<String, String> getArgs() {
+        Map<String, String> map = new HashMap<String, String>();
+        if (split[2].contains("&")) {
+            for (var pair : split[2].split("&")) {
+                var keyValueSplit = pair.split("=");
+                map.put(keyValueSplit[0], keyValueSplit[1]);
+            }
+
+        } else {
+            if (split[2].contains("=")) {
+                var keyValueSplit = split[2].split("=");
+                map.put(keyValueSplit[0], keyValueSplit[1]);
+            }
+        }
+        return map;
     }
 }
