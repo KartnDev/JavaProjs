@@ -3,7 +3,7 @@ package com.KartonDCP.MobileSever.Utils;
 public class ServerEndPoint {
     private String  ip;
     private int port;
-    public final int MAX_CONNECTIONS = 3;
+    public final int MAX_CONNECTIONS = 10;
 
     public ServerEndPoint(String ip, int port){
         this.ip = ip;

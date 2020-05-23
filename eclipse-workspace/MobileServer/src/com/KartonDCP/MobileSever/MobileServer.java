@@ -9,19 +9,23 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MobileServer {
+
+    private final int MAX_T = 3;
+
     private ServerEndPoint endPoint;
     private DbConfig dbConfig;
 
-    private ServerSocket server;
+    private volatile ServerSocket server;
     private volatile boolean serverRunStatus;
 
     public MobileServer() throws IOException, BadConfigException {
         final DirReader dirReader = new DirReader();
-        endPoint = dirReader.GetEndPoint();
-        dbConfig = dirReader.GetDbConfig();
+        endPoint = dirReader.getEndPoint();
+        dbConfig = dirReader.getDbConfig();
 
         server = new ServerSocket();
 
@@ -37,14 +41,29 @@ public class MobileServer {
         // TODO LOGGER Info "Server starts on port " + port + " and ip " + ipAddr +
         //                " and Listen not more than " + numConnections + " connections"
 
-
-
-
+        Thread clientLoop = new Thread(() -> clientListen());
+        clientLoop.setPriority(Thread.MAX_PRIORITY);
+        clientLoop.start();
 
         return serverRunStatus;
     }
 
+    private void clientListen() {
+        ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
+        while (serverRunStatus){
+            try {
+                var client = server.accept();
+                pool.execute(() -> {
 
+                });
+            } catch (IOException e) {
+                //TODO Cannot accept client
+            } catch (Exception e){
+                //TODO unhandled
+            }
+
+        }
+    }
 
 
 

@@ -1,0 +1,26 @@
+<component name="libraryTable">
+  <library name="com.jcabi:jcabi-aspects:0.22.6" type="repository">
+    <properties maven-id="com.jcabi:jcabi-aspects:0.22.6" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/jcabi-aspects-0.22.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jcabi-log-0.17.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.7.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/aspectjrt-1.8.7.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/validation-api-1.1.0.Final.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/jcabi-aspects-0.22.6-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jcabi-log-0.17-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.7.5-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/aspectjrt-1.8.7-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/validation-api-1.1.0.Final-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/jcabi-aspects-0.22.6-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jcabi-log-0.17-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.7.5-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/aspectjrt-1.8.7-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/validation-api-1.1.0.Final-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
