@@ -8,8 +8,11 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 
+import java.io.IOException;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.Map;
@@ -50,6 +53,8 @@ public class Register implements OperationWorker {
     public boolean executeWorkSync(Socket clientSock) {
         boolean endStatus = false;
 
+        var serverOperationStatus = "error = 105; Error on operation";
+
         JdbcPooledConnectionSource connectionSource = null;
         try {
             connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
@@ -71,29 +76,78 @@ public class Register implements OperationWorker {
         var user = new UserEntity(UUID.randomUUID(), name, surname, password, phoneNum);
 
 
-        usersDao.queryForFirst()
+        QueryBuilder<UserEntity, Long> queryBuilder =
+                usersDao.queryBuilder();
+        PreparedQuery<UserEntity> preparedQuery;
 
         try {
-            usersDao.create(user);
+            preparedQuery = queryBuilder.where().eq("phone_num", phoneNum).prepare();
         } catch (SQLException e) {
-            logger.error(e, "Dao manager thrown the exception while creating user entity: "  + user.toString());
-            return endStatus;
+            logger.error(e, "Cannot build or prepare query struct!");
+            return false;
         }
+        UserEntity foundUser = null;
+        try {
+            foundUser = usersDao.queryForFirst(preparedQuery);
+        } catch (SQLException e) {
+            logger.error(e, "Cannot execute query" + preparedQuery.toString());
+            return false;
+        }
+        if (foundUser == null) { // No such user with this phone number
+            var commitToken = UUID.randomUUID();
 
-        var serverOperationStatus =
+            serverOperationStatus = "user_token={0}&user user on pending.. " +
+                    "Wait for \"ok\" status. Send echo UUID back to server to commit it".formatted(commitToken);
 
 
-        clientSock.getOutputStream().write();
+            try {
+                clientSock.getOutputStream().write(serverOperationStatus.getBytes("UTF8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            String onCommitMsg = null;
+            try {
+                onCommitMsg = new String(clientSock.getInputStream().readAllBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            if(onCommitMsg.equals(commitToken.toString())){
+                try {
+                    usersDao.create(user);
+                } catch (SQLException e) {
+                    logger.error(e, "Dao manager thrown the exception while creating user entity: " + user.toString());
+                    return endStatus;
+                }
+            } else {
+                try {
+                    clientSock.getOutputStream().write("".getBytes("UTF8"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
 
+        } else { // user exists!
+            try {
+                serverOperationStatus = "error=100; phone_num={0} already exists!".formatted(phoneNum);
+                clientSock.getOutputStream().write(serverOperationStatus.getBytes("UTF8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         return !endStatus;
     }
 
     @Override
-    public Future<Long> executeWorkAsync() {
+    public Future<Long> executeWorkAsync(Socket clientSock) throws SQLException {
         return null;
     }
+
 
     @Override
     public boolean cancel() {
