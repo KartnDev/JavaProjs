@@ -20,8 +20,9 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Hibernate 5.4.11-5.4.11" level="project" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
-    <orderEntry type="library" name="com.google.code.gson:gson:2.8.6" level="project" />
+    <orderEntry type="library" name="ormlite" level="project" />
     <orderEntry type="library" name="com.jcabi:jcabi-aspects:0.22.6" level="project" />
-    <orderEntry type="library" name="org.modelmapper:modelmapper:1.0.0" level="project" />
+    <orderEntry type="library" name="com.j256.ormlite:ormlite-jdbc:4.30" level="project" />
+    <orderEntry type="library" name="mysql:mysql-connector-java:5.1.44" level="project" />
   </component>
 </module>

@@ -62,11 +62,14 @@ public class DirReader {
         var endPointMap = cfg.serverEndPoint;
 
         if (endPointMap.containsKey("userRoot") && endPointMap.containsKey("port")
-                && endPointMap.containsKey("password") && endPointMap.containsKey("DbName")) {
+                && endPointMap.containsKey("password") && endPointMap.containsKey("DbName")
+                && endPointMap.containsKey("InetAddr")) {
+
             String userRoot = endPointMap.get("userRoot");
             String portStringVal = endPointMap.get("portStr");
             String password = endPointMap.get("password");
             String dbName = endPointMap.get("dbName");
+            String inetAddr = endPointMap.get("inetAddr");
 
             int dbPort;
 
@@ -84,7 +87,7 @@ public class DirReader {
                 throw ex;
             }
 
-            return new DbConfig(userRoot, dbPort, password, dbName);
+            return new DbConfig(userRoot, inetAddr, dbPort, password, dbName);
         } else {
             throw new BadConfigException("Bad Key Exception: some of keys dont exits!");
             //TODO LOGGER

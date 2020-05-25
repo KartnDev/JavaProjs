@@ -27,6 +27,7 @@ public class MobileServer {
     private volatile boolean serverRunStatus;
 
     public MobileServer() throws IOException, BadConfigException {
+        //Read Config
         final DirReader dirReader = new DirReader();
         endPoint = dirReader.getEndPoint();
         dbConfig = dirReader.getDbConfig();
@@ -60,7 +61,7 @@ public class MobileServer {
                 var client = server.accept();
 
                 pool.execute(() -> {
-                    Handler handler = new MobileCHandler(client, token);
+                    Handler handler = new MobileCHandler(client, token, dbConfig);
                     try {
                         handler.handleSync();
                     } catch (IOException e) {

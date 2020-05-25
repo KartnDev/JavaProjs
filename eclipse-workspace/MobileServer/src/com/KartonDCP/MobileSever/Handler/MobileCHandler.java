@@ -1,6 +1,7 @@
 package com.KartonDCP.MobileSever.Handler;
 
 import com.KartonDCP.Concurent.Utils.Priority;
+import com.KartonDCP.DatabaseWorker.Config.DbConfig;
 import com.KartonDCP.MobileSever.ProtocolSDK.ProtocolMethod;
 import com.KartonDCP.MobileSever.ProtocolSDK.ProtocolParser;
 import com.KartonDCP.MobileSever.Utils.Exceptions.InvalidRequestException;
@@ -14,10 +15,12 @@ public class MobileCHandler implements Handler{
 
     private final Socket clientSocket;
     private final String token;
+    private final DbConfig dbConfig;
 
-    public MobileCHandler(Socket clientSocket, String token){
+    public MobileCHandler(Socket clientSocket, String token, DbConfig dbConfig){
         this.clientSocket = clientSocket;
         this.token = token;
+        this.dbConfig = dbConfig;
     }
 
     @Override

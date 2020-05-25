@@ -1,18 +1,44 @@
-import com.KartonDCP.MobileSever.MobileServer;
-import org.hibernate.HibernateException;
-import org.hibernate.Metamodel;
-import org.hibernate.query.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import com.KartonDCP.DatabaseWorker.Models.UserEntity;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
+import com.j256.ormlite.logger.Logger;
+import com.j256.ormlite.table.TableUtils;
 
-import javax.persistence.metamodel.EntityType;
+import java.util.UUID;
+import com.j256.ormlite.logger.LoggerFactory;
 
-import java.util.Map;
 
 public class Main {
     public static void main(final String[] args) throws Exception {
-        MobileServer server = new MobileServer();
-        server.startServing();
+        String url = "jdbc:mysql://localhost:3306/MobileServer";
+        String username = "root";
+        String password = "zxc123";
+        Logger logger = LoggerFactory.getLogger(Main.class);
+
+        var connectionSource = new JdbcPooledConnectionSource(url, username, password);
+
+        Dao<UserEntity, Long> usersDao
+                = DaoManager.createDao(connectionSource, UserEntity.class);
+
+        TableUtils.createTableIfNotExists(connectionSource, UserEntity.class);
+
+
+
+
+        var users = new UserEntity();
+        users.setName("дима");
+        users.setPassword("12321321");
+        users.setPhoneNum("2123412341");
+        users.setSurname("sфывапфвыаsf");
+        users.setUserToken(UUID.randomUUID());
+        usersDao.create(users);
+
+
+
+        usersDao.forEach(lib -> {
+            System.out.println(lib.getName() + lib.getUserToken().toString());
+        });
+
     }
 }
