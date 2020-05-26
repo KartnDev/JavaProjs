@@ -76,10 +76,18 @@ public class MobileServer {
                 var client = server.accept();
                 Socket cFinalSocket = client;
 
-                Handler handler = new MobileCHandler(cFinalSocket, token, dbConfig);
-                handler.handleSync();
+                pool.execute(() -> {
+                    Handler handler = new MobileCHandler(cFinalSocket, token, dbConfig);
+                    try {
+                        handler.handleSync();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InvalidRequestException e) {
+                        e.printStackTrace();
+                    }
+                });
 
-                //pool.execute(() -> );
+
 
             } catch (IOException e) {
                 logger.error(e, "IOError while handling the client!");
