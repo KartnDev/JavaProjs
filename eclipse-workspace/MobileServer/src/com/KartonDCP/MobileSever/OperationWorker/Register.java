@@ -110,9 +110,6 @@ public class Register implements OperationWorker {
         return item.size() == 0;
     }
 
-
-
-
     @Override
     public Future<Long> executeWorkAsync() {
         return null;

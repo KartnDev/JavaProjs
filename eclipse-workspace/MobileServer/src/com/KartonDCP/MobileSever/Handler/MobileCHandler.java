@@ -7,6 +7,7 @@ import com.KartonDCP.MobileSever.OperationWorker.Register;
 import com.KartonDCP.MobileSever.ProtocolSDK.ProtocolMethod;
 import com.KartonDCP.MobileSever.ProtocolSDK.ProtocolParser;
 import com.KartonDCP.MobileSever.Utils.Exceptions.InvalidRequestException;
+import com.KartonDCP.MobileSever.Utils.StreamUtils;
 import com.jcabi.aspects.Async;
 
 import java.io.BufferedReader;
@@ -31,21 +32,8 @@ public class MobileCHandler implements Handler{
     @Override
     public boolean handleSync() throws IOException, InvalidRequestException, NoSuchFieldException, SQLException {
         var inputStream = clientSocket.getInputStream();
-        BufferedReader bufferedStreamReader = null;
-        try {
-            bufferedStreamReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        } catch (IOException e) {
 
-        }
-
-        char buff[] = new char[10024];
-        try {
-            bufferedStreamReader.read(buff);
-        } catch (IOException e) {
-
-        }
-
-        String request = new String(buff);
+        String request = StreamUtils.InputStreamToString(inputStream);
 
         final var requestParser = new ProtocolParser(request, token);
 
@@ -54,19 +42,22 @@ public class MobileCHandler implements Handler{
 
         switch (method){
             case Register -> {
+
                 OperationWorker worker = new Register(clientSocket, args, dbConfig);
                 worker.executeWorkSync();
             }
             case BadMethod -> {
                 return false;
             }
-
+            default -> {
+                return false;
+            }
 
         }
 
 
 
-        return false; // NEVER DOES HERE...
+        return false; // NEVER DOES IT AND NEVER GOES HERE...
     }
 
 
