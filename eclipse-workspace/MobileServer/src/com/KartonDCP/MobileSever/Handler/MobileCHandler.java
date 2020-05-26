@@ -2,12 +2,16 @@ package com.KartonDCP.MobileSever.Handler;
 
 import com.KartonDCP.Concurent.Utils.Priority;
 import com.KartonDCP.DatabaseWorker.Config.DbConfig;
+import com.KartonDCP.MobileSever.OperationWorker.OperationWorker;
+import com.KartonDCP.MobileSever.OperationWorker.Register;
 import com.KartonDCP.MobileSever.ProtocolSDK.ProtocolMethod;
 import com.KartonDCP.MobileSever.ProtocolSDK.ProtocolParser;
 import com.KartonDCP.MobileSever.Utils.Exceptions.InvalidRequestException;
 import com.jcabi.aspects.Async;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.concurrent.Future;
 
@@ -26,9 +30,21 @@ public class MobileCHandler implements Handler{
     @Override
     public boolean handleSync() throws IOException, InvalidRequestException {
         var inputStream = clientSocket.getInputStream();
-        byte[] byteArray = inputStream.readAllBytes();
+        BufferedReader bufferedStreamReader = null;
+        try {
+            bufferedStreamReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        } catch (IOException e) {
 
-        String request = new String(byteArray);
+        }
+
+        char buff[] = new char[10024];
+        try {
+            bufferedStreamReader.read(buff);
+        } catch (IOException e) {
+
+        }
+
+        String request = new String(buff);
 
         final var requestParser = new ProtocolParser(request, token);
 
@@ -37,11 +53,14 @@ public class MobileCHandler implements Handler{
 
         switch (method){
             case Register -> {
-
+                OperationWorker worker = new Register(args, dbConfig);
+                worker.executeWorkSync(clientSocket);
             }
             case BadMethod -> {
                 return false;
             }
+
+
         }
 
 

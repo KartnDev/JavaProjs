@@ -23,14 +23,14 @@ public class ProtocolParser {
         if (!correctFormat()) {
             throw new InvalidRequestException("Cannot recognize request format");
         }
-        if (!split[0].equals(token)) {
+        if (!split[0].equals(token.toLowerCase())) {
             throw new TokenException("Client have no key token!");
         }
     }
 
     private boolean correctFormat() {
         if (requestStr.contains("?")) {
-            split = requestStr.split("/?");
+            split = requestStr.split("\\?(?!\\?)");
             return split.length == 3;
         } else {
             return false;

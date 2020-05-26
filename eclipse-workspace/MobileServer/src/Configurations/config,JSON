@@ -1,5 +1,9 @@
 {
     "serverEndPoint": {"ip": "127.0.0.1", "port": "3305"},
-    "appToken": "",
-    "mySqlServer": {"userRoot": "root", inetAddr: "localhost", "portStr": "3306", "password": "zxc123", "dbName": "MobileServer"}
+    "appToken": "98F1EJJDa4fjwD2fUIHWUd2dsaAsS289IFFFadde3A8213HFI7",
+    "mySqlServer": {"userRoot": "root",
+                    "inetAddr": "localhost",
+                    "portStr": "3306",
+                    "password": "zxc123",
+                    "dbName": "MobileServer"}
 }

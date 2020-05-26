@@ -27,7 +27,6 @@ public class DbConfig {
     }
 
     public String getJdbcUrl() {
-
-        return "jdbc:mysql://{0}:{port}/{MobileServer}".formatted(addr, port, databaseName);
+        return String.format("jdbc:mysql://%s:%s/%s", addr, port, databaseName);
     }
 }

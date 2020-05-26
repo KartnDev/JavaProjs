@@ -18,16 +18,16 @@ public class DirReader {
     public DirReader() throws IOException, BadConfigException {
         cfg = this.readConfig();
 
-        var assertValues = cfg.serverEndPoint.values();
-        assertValues.addAll(cfg.mySqlServer.values());
-        assertValues.add(cfg.appToken);
-
-
-        for (var value : assertValues){
-            if(value.isBlank() || value.isEmpty() || value.length() < 2){
-                throw new BadConfigException("in cfg found 1 or more bad values");
-            }
-        }
+//        var assertValues = cfg.serverEndPoint.values();
+//        assertValues.addAll(cfg.mySqlServer.values());
+//        assertValues.add(cfg.appToken);
+//
+//
+//        for (var value : assertValues){
+//            if(value.isBlank() || value.isEmpty() || value.length() < 2){
+//                throw new BadConfigException("in cfg found 1 or more bad values");
+//            }
+//        }
 
     }
 
@@ -59,17 +59,17 @@ public class DirReader {
     }
 
     public DbConfig getDbConfig() throws BadConfigException {
-        var endPointMap = cfg.serverEndPoint;
+        var dbMap = cfg.mySqlServer;
 
-        if (endPointMap.containsKey("userRoot") && endPointMap.containsKey("port")
-                && endPointMap.containsKey("password") && endPointMap.containsKey("DbName")
-                && endPointMap.containsKey("InetAddr")) {
+        if (dbMap.containsKey("userRoot") && dbMap.containsKey("portStr")
+                && dbMap.containsKey("password") && dbMap.containsKey("dbName")
+                && dbMap.containsKey("inetAddr")) {
 
-            String userRoot = endPointMap.get("userRoot");
-            String portStringVal = endPointMap.get("portStr");
-            String password = endPointMap.get("password");
-            String dbName = endPointMap.get("dbName");
-            String inetAddr = endPointMap.get("inetAddr");
+            String userRoot = dbMap.get("userRoot");
+            String portStringVal = dbMap.get("portStr");
+            String password = dbMap.get("password");
+            String dbName = dbMap.get("dbName");
+            String inetAddr = dbMap.get("inetAddr");
 
             int dbPort;
 
@@ -95,11 +95,11 @@ public class DirReader {
     }
 
     public String getAppToken() throws BadConfigException {
-        var endPointMap = cfg.serverEndPoint;
-        if(endPointMap.containsKey("appToken")){
-            return endPointMap.get("appToken");
+        var appToken = cfg.appToken;
+        if(!appToken.isEmpty()){
+            return appToken;
         } else{
-            throw new BadConfigException("Bad Key Exception: cfg doesnt contains config file!");
+            throw new BadConfigException("Bad Key Exception: cfg doesnt contains app token!");
             //TODO LOGGER
         }
     }
@@ -114,8 +114,9 @@ public class DirReader {
             //TODO LOGGER HERE
             throw e;
         }
-        var cfgPath = file + "/src/Configurations/config.JSON";
-        if (new File(cfgPath).exists()) {
+        var cfgPath = file + "\\src\\Configurations\\config,JSON";
+
+        if ((new File(cfgPath)).exists()) {
             return new File(cfgPath);
         } else { // Bad path
 

@@ -10,21 +10,22 @@ public class EntityMapper {
 
     private JdbcPooledConnectionSource connectionSource;
 
-    private LinkedHashSet<Object> queueToEntityMapper;
+    private LinkedHashSet<Class> queueToEntityMapper;
 
 
     public EntityMapper(String url, String username, String password) throws SQLException {
+        queueToEntityMapper = new LinkedHashSet<Class>();
         connectionSource = new JdbcPooledConnectionSource(url, username, password);
     }
 
-    public void addToMap(Object entity){
+    public void addToMap(Class entity){
         queueToEntityMapper.add(entity);
     }
 
     public void mapEntitiesIfNotExist() throws SQLException {
         if(queueToEntityMapper.size() > 0){
             for (var entity: queueToEntityMapper) {
-                TableUtils.createTableIfNotExists(connectionSource, entity.getClass());
+                TableUtils.createTableIfNotExists(connectionSource, entity);
             }
         }
     }

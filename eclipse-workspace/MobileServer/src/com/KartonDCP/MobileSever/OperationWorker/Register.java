@@ -12,7 +12,9 @@ import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.Map;
@@ -21,7 +23,6 @@ import java.util.concurrent.Future;
 
 public class Register implements OperationWorker {
 
-    private final Socket clientSock;
     private final Map<String, String> args;
     private final DbConfig dbConfig;
 
@@ -33,8 +34,7 @@ public class Register implements OperationWorker {
     private final String phoneNum;
 
 
-    public Register(Socket clientSock, Map<String, String> args, DbConfig dbConfig) throws InvalidRequestException {
-        this.clientSock = clientSock;
+    public Register(Map<String, String> args, DbConfig dbConfig) throws InvalidRequestException {
         this.dbConfig = dbConfig;
         this.args = args;
 
@@ -42,7 +42,7 @@ public class Register implements OperationWorker {
             name = args.get("name");
             surname = args.get("surname");
             password = args.get("password");
-            phoneNum = args.get("phone_number");
+            phoneNum = args.get("phone_num");
         }else {
             throw new InvalidRequestException("Bad arguments in request to execute operation!");
         }
@@ -78,26 +78,34 @@ public class Register implements OperationWorker {
 
         QueryBuilder<UserEntity, Long> queryBuilder =
                 usersDao.queryBuilder();
-        PreparedQuery<UserEntity> preparedQuery;
+        PreparedQuery<UserEntity> preparedQuery = null;
 
         try {
-            preparedQuery = queryBuilder.where().eq("phone_num", phoneNum).prepare();
+            preparedQuery = queryBuilder
+                    .where()
+                    .eq(UserEntity.class.getField("phoneNum").getName(), phoneNum)
+                    .prepare();
+
         } catch (SQLException e) {
             logger.error(e, "Cannot build or prepare query struct!");
             return false;
+        } catch (NoSuchFieldException e){
+
         }
         UserEntity foundUser = null;
-        try {
-            foundUser = usersDao.queryForFirst(preparedQuery);
-        } catch (SQLException e) {
-            logger.error(e, "Cannot execute query" + preparedQuery.toString());
-            return false;
-        }
+//        try {
+//            //foundUser = usersDao.queryForFirst(preparedQuery);
+//        } catch (SQLException e) {
+//            logger.error(e, "Cannot execute query" + preparedQuery.toString());
+//            return false;
+//        }
         if (foundUser == null) { // No such user with this phone number
             var commitToken = UUID.randomUUID();
 
-            serverOperationStatus = "user_token={0}&user user on pending.. " +
-                    "Wait for \"ok\" status. Send echo UUID back to server to commit it".formatted(commitToken);
+            serverOperationStatus = String.format("user_token=%s&user user on pending.. " +
+                    "Wait for \"ok\" status. Send echo UUID=%s back to server to commit it",
+                    user.getUserToken(),
+                    commitToken);
 
 
             try {
@@ -107,15 +115,24 @@ public class Register implements OperationWorker {
                 return false;
             }
 
-            String onCommitMsg = null;
+            BufferedReader bufferedStreamReader = null;
             try {
-                onCommitMsg = new String(clientSock.getInputStream().readAllBytes());
+                bufferedStreamReader = new BufferedReader(new InputStreamReader(clientSock.getInputStream()));
             } catch (IOException e) {
-                e.printStackTrace();
-                return false;
+
             }
 
-            if(onCommitMsg.equals(commitToken.toString())){
+            char buff[] = new char[10024];
+            try {
+                bufferedStreamReader.read(buff);
+            } catch (IOException e) {
+
+            }
+
+            String clientCommitEcho = new String(buff);
+
+
+            if(clientCommitEcho.equals(commitToken.toString())){
                 try {
                     usersDao.create(user);
                 } catch (SQLException e) {
@@ -124,7 +141,8 @@ public class Register implements OperationWorker {
                 }
             } else {
                 try {
-                    clientSock.getOutputStream().write("".getBytes("UTF8"));
+                    clientSock.getOutputStream().write("Committed; Status: 0".getBytes("UTF8"));
+                    logger.info(user.toString() + "Registered and Committed");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -133,7 +151,7 @@ public class Register implements OperationWorker {
 
         } else { // user exists!
             try {
-                serverOperationStatus = "error=100; phone_num={0} already exists!".formatted(phoneNum);
+                serverOperationStatus = String.format("error=100; phone_num=%s already exists!", phoneNum);
                 clientSock.getOutputStream().write(serverOperationStatus.getBytes("UTF8"));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -144,7 +162,7 @@ public class Register implements OperationWorker {
     }
 
     @Override
-    public Future<Long> executeWorkAsync(Socket clientSock) throws SQLException {
+    public Future<Long> executeWorkAsync(Socket clientSock) {
         return null;
     }
 
@@ -158,7 +176,7 @@ public class Register implements OperationWorker {
         return args.containsKey("name")
                 && args.containsKey("surname")
                 && args.containsKey("password")
-                &&args.containsKey("phone_number");
+                &&args.containsKey("phone_num");
     }
     private boolean validateName(){
         return args.get("name").length() > 1;
@@ -171,7 +189,7 @@ public class Register implements OperationWorker {
         return args.get("password").length() > 8;
     }
     private boolean validatePhoneNum(){
-        return args.get("phone_number").length() > 7;
+        return args.get("phone_num").length() > 7;
     }
 
 
