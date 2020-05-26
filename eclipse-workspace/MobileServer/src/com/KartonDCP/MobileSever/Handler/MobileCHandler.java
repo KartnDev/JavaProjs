@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.concurrent.Future;
 
 public class MobileCHandler implements Handler{
@@ -28,7 +29,7 @@ public class MobileCHandler implements Handler{
     }
 
     @Override
-    public boolean handleSync() throws IOException, InvalidRequestException {
+    public boolean handleSync() throws IOException, InvalidRequestException, NoSuchFieldException, SQLException {
         var inputStream = clientSocket.getInputStream();
         BufferedReader bufferedStreamReader = null;
         try {
@@ -53,8 +54,8 @@ public class MobileCHandler implements Handler{
 
         switch (method){
             case Register -> {
-                OperationWorker worker = new Register(args, dbConfig);
-                worker.executeWorkSync(clientSocket);
+                OperationWorker worker = new Register(clientSocket, args, dbConfig);
+                worker.executeWorkSync();
             }
             case BadMethod -> {
                 return false;

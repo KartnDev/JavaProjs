@@ -26,6 +26,7 @@ public class EntityMapper {
         if(queueToEntityMapper.size() > 0){
             for (var entity: queueToEntityMapper) {
                 TableUtils.createTableIfNotExists(connectionSource, entity);
+                
             }
         }
     }

@@ -34,7 +34,7 @@ public class UserEntity implements Serializable {
     @DatabaseField(canBeNull = false)
     private String password;
 
-    @DatabaseField(canBeNull = false, unique = true, columnName = "phone_num")
+    @DatabaseField(canBeNull = false, unique = true, columnName = "phoneNum")
     private String phoneNum;
 
     public int getId() {

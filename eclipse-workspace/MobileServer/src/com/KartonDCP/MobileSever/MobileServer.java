@@ -72,9 +72,14 @@ public class MobileServer {
     private void clientListen() {
         ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
         while (serverRunStatus){
+
+            Socket client = null;
             try {
-                var client = server.accept();
-                Socket cFinalSocket = client;
+                client = server.accept();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Socket cFinalSocket = client;
 
                 pool.execute(() -> {
                     Handler handler = new MobileCHandler(cFinalSocket, token, dbConfig);
@@ -84,16 +89,15 @@ public class MobileServer {
                         e.printStackTrace();
                     } catch (InvalidRequestException e) {
                         e.printStackTrace();
+                    } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
                     }
                 });
 
 
 
-            } catch (IOException e) {
-                logger.error(e, "IOError while handling the client!");
-            } catch (Exception e){
-                logger.error(e, "Unhandled exception was occur while handling the client!");
-            }
 
         }
     }

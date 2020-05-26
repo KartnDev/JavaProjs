@@ -3,6 +3,7 @@ package com.KartonDCP.MobileSever.OperationWorker;
 import com.KartonDCP.DatabaseWorker.Config.DbConfig;
 import com.KartonDCP.DatabaseWorker.Models.UserEntity;
 import com.KartonDCP.MobileSever.Utils.Exceptions.InvalidRequestException;
+import com.KartonDCP.MobileSever.Utils.StreamUtils;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
@@ -12,6 +13,7 @@ import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 
+import javax.validation.constraints.NotNull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,7 +26,10 @@ import java.util.concurrent.Future;
 public class Register implements OperationWorker {
 
     private final Map<String, String> args;
+    private final Socket clientSock;
     private final DbConfig dbConfig;
+
+    private JdbcPooledConnectionSource connectionSource = null;
 
     private final Logger logger = LoggerFactory.getLogger(Register.class);
 
@@ -34,7 +39,8 @@ public class Register implements OperationWorker {
     private final String phoneNum;
 
 
-    public Register(Map<String, String> args, DbConfig dbConfig) throws InvalidRequestException {
+    public Register(Socket clientSock, Map<String, String> args, DbConfig dbConfig) throws InvalidRequestException {
+        this.clientSock = clientSock;
         this.dbConfig = dbConfig;
         this.args = args;
 
@@ -50,56 +56,20 @@ public class Register implements OperationWorker {
 
 
     @Override
-    public boolean executeWorkSync(Socket clientSock) {
+    public boolean executeWorkSync() throws SQLException, NoSuchFieldException, IOException {
         boolean endStatus = false;
 
         var serverOperationStatus = "error = 105; Error on operation";
 
-        JdbcPooledConnectionSource connectionSource = null;
-        try {
-            connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
+        connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
                                                                   dbConfig.getUserRoot(),
                                                                   dbConfig.getPassword());
-        } catch (SQLException e) {
-            logger.error(e, "Jdbc Pooled conn-n thrown the exception while alloc and init");
-            return endStatus;
-        }
 
-        Dao<UserEntity, Long> usersDao = null;
-        try {
-            usersDao = DaoManager.createDao(connectionSource, UserEntity.class);
-        } catch (SQLException e) {
-            logger.error(e, "Dao manager thrown the exception while building");
-            return endStatus;
-        }
+        Dao<UserEntity, Long> usersDao = DaoManager.createDao(connectionSource, UserEntity.class);
 
         var user = new UserEntity(UUID.randomUUID(), name, surname, password, phoneNum);
 
-
-        QueryBuilder<UserEntity, Long> queryBuilder =
-                usersDao.queryBuilder();
-        PreparedQuery<UserEntity> preparedQuery = null;
-
-        try {
-            preparedQuery = queryBuilder
-                    .where()
-                    .eq(UserEntity.class.getField("phoneNum").getName(), phoneNum)
-                    .prepare();
-
-        } catch (SQLException e) {
-            logger.error(e, "Cannot build or prepare query struct!");
-            return false;
-        } catch (NoSuchFieldException e){
-
-        }
-        UserEntity foundUser = null;
-//        try {
-//            //foundUser = usersDao.queryForFirst(preparedQuery);
-//        } catch (SQLException e) {
-//            logger.error(e, "Cannot execute query" + preparedQuery.toString());
-//            return false;
-//        }
-        if (foundUser == null) { // No such user with this phone number
+        if (isUserExists(user.getPhoneNum(), usersDao)) { // No such user with this phone number
             var commitToken = UUID.randomUUID();
 
             serverOperationStatus = String.format("user_token=%s&user user on pending.. " +
@@ -107,62 +77,44 @@ public class Register implements OperationWorker {
                     user.getUserToken(),
                     commitToken);
 
+            // Send to client that server received the request and create the user and are waiting for commit
+            clientSock.getOutputStream().write(serverOperationStatus.getBytes("UTF8"));
 
-            try {
-                clientSock.getOutputStream().write(serverOperationStatus.getBytes("UTF8"));
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
+            // Loads user echo with UUID
+            var clientCommitEcho = StreamUtils.InputStreamToString(clientSock.getInputStream());
 
-            BufferedReader bufferedStreamReader = null;
-            try {
-                bufferedStreamReader = new BufferedReader(new InputStreamReader(clientSock.getInputStream()));
-            } catch (IOException e) {
-
-            }
-
-            char buff[] = new char[10024];
-            try {
-                bufferedStreamReader.read(buff);
-            } catch (IOException e) {
-
-            }
-
-            String clientCommitEcho = new String(buff);
-
-
-            if(clientCommitEcho.equals(commitToken.toString())){
-                try {
-                    usersDao.create(user);
-                } catch (SQLException e) {
-                    logger.error(e, "Dao manager thrown the exception while creating user entity: " + user.toString());
-                    return endStatus;
-                }
+            //Commit user
+            if(clientCommitEcho.trim().equals(commitToken.toString())){
+                usersDao.create(user);
+                clientSock.getOutputStream().write("Committed; Status: 0".getBytes("UTF8"));
+                logger.info(user.toString() + "Registered, Committed");
             } else {
-                try {
-                    clientSock.getOutputStream().write("Committed; Status: 0".getBytes("UTF8"));
-                    logger.info(user.toString() + "Registered and Committed");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+                clientSock.getOutputStream().write("Rollback; Status: 103 client didnt send back UUID echo token!"
+                                .getBytes("UTF8"));
 
+                logger.info(user.toString() + "Rollback, Client not approved operation");
+            }
 
         } else { // user exists!
-            try {
-                serverOperationStatus = String.format("error=100; phone_num=%s already exists!", phoneNum);
-                clientSock.getOutputStream().write(serverOperationStatus.getBytes("UTF8"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            serverOperationStatus = String.format("error=100; phone_num=%s already exists!", phoneNum);
+            clientSock.getOutputStream().write(serverOperationStatus.getBytes("UTF8"));
         }
 
         return !endStatus;
     }
 
+
+    private boolean isUserExists(@NotNull String userPhoneNum,@NotNull Dao<UserEntity, Long> usersDao) throws SQLException {
+
+        var num = usersDao.executeRaw("SELECT * FROM mobileserver.users WHERE phoneNum=" + phoneNum);
+        return num != 0;
+    }
+
+
+
+
     @Override
-    public Future<Long> executeWorkAsync(Socket clientSock) {
+    public Future<Long> executeWorkAsync() {
         return null;
     }
 
@@ -191,7 +143,5 @@ public class Register implements OperationWorker {
     private boolean validatePhoneNum(){
         return args.get("phone_num").length() > 7;
     }
-
-
 
 }
