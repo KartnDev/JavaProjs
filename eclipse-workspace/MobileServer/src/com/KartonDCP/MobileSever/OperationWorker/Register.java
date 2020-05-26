@@ -106,8 +106,8 @@ public class Register implements OperationWorker {
 
     private boolean isUserExists(@NotNull String userPhoneNum,@NotNull Dao<UserEntity, Long> usersDao) throws SQLException {
 
-        var num = usersDao.executeRaw("SELECT * FROM mobileserver.users WHERE phoneNum=" + phoneNum);
-        return num != 0;
+        var item = usersDao.queryBuilder().where().eq("phoneNum", phoneNum.toString()).query();
+        return item.size() == 0;
     }
 
 

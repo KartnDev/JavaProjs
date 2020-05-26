@@ -22,7 +22,7 @@ public class UserEntity implements Serializable {
     @DatabaseField(generatedId = true, unique = true)
     private int id;
 
-    @DatabaseField(canBeNull = false, unique = true, dataType = DataType.UUID)
+    @DatabaseField(canBeNull = false, unique = true, dataType = DataType.UUID, columnName = "user_token")
     private UUID userToken;
 
     @DatabaseField(canBeNull = false)
@@ -34,7 +34,7 @@ public class UserEntity implements Serializable {
     @DatabaseField(canBeNull = false)
     private String password;
 
-    @DatabaseField(canBeNull = false, unique = true, columnName = "phoneNum")
+    @DatabaseField(canBeNull = false, unique = true)
     private String phoneNum;
 
     public int getId() {
