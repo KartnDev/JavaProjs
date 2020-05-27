@@ -24,9 +24,9 @@ import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MobileServer {
+public class MobileServer implements Server{
 
-    private final Logger logger = LoggerFactory.getLogger(Register.class);
+    private final Logger logger = LoggerFactory.getLogger(MobileServer.class);
 
     private static final int MAX_T = 3;
 
@@ -78,21 +78,28 @@ public class MobileServer {
                 client = server.accept();
             } catch (IOException e) {
                 e.printStackTrace();
+                logger.info(e, "Exception while accepting");
             }
             Socket cFinalSocket = client;
 
                 pool.execute(() -> {
                     Handler handler = new MobileCHandler(cFinalSocket, token, dbConfig);
+                    var exceptionMsg = "Exception in pool thread while handling";
                     try {
                         handler.handleSync();
-                    } catch (IOException e) {
+                        logger.info("Start new handler t client");
+                    }  catch (InvalidRequestException e) {
                         e.printStackTrace();
-                    } catch (InvalidRequestException e) {
-                        e.printStackTrace();
+                        logger.info(e, exceptionMsg);
                     } catch (NoSuchFieldException e) {
+                        logger.info(e, exceptionMsg);
                         e.printStackTrace();
-                    } catch (SQLException throwables) {
-                        throwables.printStackTrace();
+                    } catch (SQLException e) {
+                        logger.info(e, exceptionMsg);
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        logger.info(e, exceptionMsg);
+                        e.printStackTrace();
                     }
                 });
 
@@ -101,7 +108,20 @@ public class MobileServer {
 
         }
     }
+    
 
+    @Override
+    public boolean waitAndShutdown() {
+        return false;
+    }
 
+    @Override
+    public boolean getStatus() {
+        return false;
+    }
 
+    @Override
+    public ServerEndPoint getServerEndPoint() {
+        return null;
+    }
 }

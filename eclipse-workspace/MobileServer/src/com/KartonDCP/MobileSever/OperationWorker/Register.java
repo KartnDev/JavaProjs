@@ -125,7 +125,7 @@ public class Register implements OperationWorker {
         return args.containsKey("name")
                 && args.containsKey("surname")
                 && args.containsKey("password")
-                &&args.containsKey("phone_num");
+                && args.containsKey("phone_num");
     }
     private boolean validateName(){
         return args.get("name").length() > 1;
