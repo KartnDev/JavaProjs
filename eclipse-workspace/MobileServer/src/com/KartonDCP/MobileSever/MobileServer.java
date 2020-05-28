@@ -30,6 +30,9 @@ public abstract class MobileServer implements Server{
     protected volatile ServerSocket server;
 
     public MobileServer() throws IOException, BadConfigException, SQLException {
+
+        serverRunStatus = false;
+
         //Read Config
         final DirReader dirReader = new DirReader();
         endPoint = dirReader.getEndPoint();
@@ -50,9 +53,28 @@ public abstract class MobileServer implements Server{
     }
 
     @Override
-    public boolean getStatus() {
+    public boolean getStatus(){
         return serverRunStatus;
     }
+
+    @Override
+    public boolean startServing(){
+        if (serverRunStatus)
+        {
+            return false;
+        }
+        serverRunStatus = true;
+
+        logger.info("Server starts on port " + endPoint.getPort() + " and ip " + endPoint.getIp() +
+                " and Listen not more than " + endPoint.MAX_CONNECTIONS + " connections");
+
+        Thread clientLoop = new Thread(() -> clientListen());
+        clientLoop.start();
+
+        return serverRunStatus;
+    }
+
+    protected abstract void clientListen();
 
 
 }

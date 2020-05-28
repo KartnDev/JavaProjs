@@ -22,25 +22,9 @@ public final class TcpMobileServer extends MobileServer {
         server.bind(new InetSocketAddress(ipAddr, endPoint.getPort()), endPoint.MAX_CONNECTIONS);
     }
 
-    @Override
-    public boolean startServing(){
-        if (serverRunStatus)
-        {
-            return false;
-        }
-        serverRunStatus = true;
 
-        logger.info("Server starts on port " + endPoint.getPort() + " and ip " + endPoint.getIp() +
-                                " and Listen not more than " + endPoint.MAX_CONNECTIONS + " connections");
-
-        Thread clientLoop = new Thread(() -> clientListen());
-        clientLoop.start();
-
-        return serverRunStatus;
-    }
-
-
-    private void clientListen() {
+    @SuppressWarnings("DuplicatedCode")
+    protected void clientListen() {
         ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
         while (serverRunStatus){
 
