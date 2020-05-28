@@ -45,13 +45,13 @@ public class SSLClient implements Callable {
             var response = StreamUtils.InputStreamToString(innerSock.getInputStream());
             System.out.println("RECEIVED: " + response);
 
-            if (!response.contains("error=100") && request.contains("UUID"))
+            if (!response.contains("error=100"))
             {
                 String uuid = response.split("UUID=")[1].split("\\s+")[0];
-
+                out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
                 System.out.println("Sent: " + uuid);
                 out.println(uuid);
-
+                out.flush();
 
                 // Read the first batch of the TcpServer response bytes.
 

@@ -18,7 +18,10 @@ public class ClientStartup {
 
 
         ExecutorService pool = Executors.newFixedThreadPool(3);
+
+
         pool.submit(new SSLClient(InetAddress.getByName("127.0.0.1"), 3305, factory));
+
 
         pool.shutdown();
 

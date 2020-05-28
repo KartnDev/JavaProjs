@@ -9,18 +9,17 @@ public final class RandomWork {
 
     private static String formatTheRequest(String methodName, Map<String, String> args, String appToken) {
         StringBuffer sb = new StringBuffer();
-        int iterator = 0;
 
         args.forEach((key, value) -> { // я че в джаваскрипт попал???
             sb.append(key);
             sb.append("=");
             sb.append(value);
-            if(iterator != args.size() - 1){
-                sb.append("&");
-            }
+            sb.append("&");
         });
 
-        return String.format("%s?{%s}?%s", appToken, methodName, sb.toString());
+        sb.deleteCharAt(sb.length() - 1);
+
+        return String.format("%s?%s?%s", appToken, methodName, sb.toString());
     }
 
 
@@ -42,12 +41,10 @@ public final class RandomWork {
 
         args.put("name", getRandWord(6));
         args.put("surname", getRandWord(10));
-        args.put("password", getRandWord(3) +
-                UUID.randomUUID().toString() +
-                getRandWord(3));
+        args.put("password", getRandWord(5) + (new Random()).nextInt(100));
 
         var rand = new Random();
-        args.put("phone_num", "8" + rand.nextInt(999999999) + rand.ints(10));
+        args.put("phone_num", "8" + rand.nextInt(999999999) + rand.nextInt(10));
 
         return args;
     }
