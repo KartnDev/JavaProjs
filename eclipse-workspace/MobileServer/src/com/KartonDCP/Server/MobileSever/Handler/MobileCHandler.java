@@ -43,9 +43,6 @@ public class MobileCHandler implements Handler{
                 OperationWorker worker = new Register(clientSocket, args, dbConfig);
                 worker.executeWorkSync();
             }
-            case BadMethod -> {
-                return false;
-            }
             default -> {
                 return false;
             }

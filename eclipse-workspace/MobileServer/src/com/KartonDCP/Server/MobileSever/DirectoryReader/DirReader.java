@@ -114,7 +114,7 @@ public class DirReader {
             //TODO LOGGER HERE
             throw e;
         }
-        var cfgPath = file + "\\src\\com.KartonDCP.Server.Configurations\\config,JSON";
+        var cfgPath = file + "\\src\\com\\KartonDCP\\Server\\Configurations\\config,JSON";
 
         if ((new File(cfgPath)).exists()) {
             return new File(cfgPath);
