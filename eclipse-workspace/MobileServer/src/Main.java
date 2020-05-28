@@ -1,6 +1,5 @@
-import com.KartonDCP.MobileSever.SSLMobileServer;
-import com.KartonDCP.MobileSever.Server;
-import com.KartonDCP.MobileSever.TcpMobileServer;
+import com.KartonDCP.Server.MobileSever.SSLMobileServer;
+import com.KartonDCP.Server.MobileSever.Server;
 
 
 public class Main {
