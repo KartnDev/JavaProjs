@@ -4,11 +4,11 @@ import com.KartonDCP.Utils.Random.RandomWork;
 import com.KartonDCP.Utils.Streams.StreamUtils;
 
 import javax.net.SocketFactory;
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLSocket;
+import javax.net.ssl.*;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.security.KeyStore;
 import java.util.concurrent.Callable;
 
 public class SSLClient implements Callable {
@@ -18,18 +18,22 @@ public class SSLClient implements Callable {
     @SuppressWarnings("SpellCheckingInspection")
     public static final String appToken = "98F1EJJDa4fjwD2fUIHWUd2dsaAsS289IFFFadde3A8213HFI7";
 
-    private static final String[] PROTOCOLS = new String[] {"TLSv1.2"};
+    private static final String[] protocols = new String[] {"TLSv1.3"};
+    private static final String[] cipher_suites = new String[] {"TLS_AES_128_GCM_SHA256"};
 
 
 
     public SSLClient(InetAddress endPoint, int port, SocketFactory factory){
         try {
+
             innerSock = (SSLSocket) factory.createSocket(endPoint, port);
         } catch (IOException e) {
             System.err.println(e);
-        }
-        innerSock.setEnabledProtocols(PROTOCOLS);
+        } catch (Exception e){
 
+        }
+        innerSock.setEnabledProtocols(protocols);
+        innerSock.setEnabledCipherSuites(cipher_suites);
     }
 
 
