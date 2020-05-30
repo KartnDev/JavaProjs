@@ -4,6 +4,7 @@ import com.KartonDCP.Utils.Random.RandomWork;
 import com.KartonDCP.Utils.Streams.StreamUtils;
 
 import javax.net.SocketFactory;
+import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import java.io.*;
 import java.net.InetAddress;
@@ -12,18 +13,22 @@ import java.util.concurrent.Callable;
 
 public class SSLClient implements Callable {
 
-    private Socket innerSock;
+    private SSLSocket innerSock;
 
     @SuppressWarnings("SpellCheckingInspection")
     public static final String appToken = "98F1EJJDa4fjwD2fUIHWUd2dsaAsS289IFFFadde3A8213HFI7";
 
+    private static final String[] PROTOCOLS = new String[] {"TLSv1.2"};
+
+
 
     public SSLClient(InetAddress endPoint, int port, SocketFactory factory){
         try {
-            innerSock = factory.createSocket(endPoint, port);
+            innerSock = (SSLSocket) factory.createSocket(endPoint, port);
         } catch (IOException e) {
             System.err.println(e);
         }
+        innerSock.setEnabledProtocols(PROTOCOLS);
 
     }
 
@@ -32,7 +37,7 @@ public class SSLClient implements Callable {
     @Override
     public Object call() throws Exception {
         try {
-
+            innerSock.startHandshake();
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
 
             // Send request to register the random user

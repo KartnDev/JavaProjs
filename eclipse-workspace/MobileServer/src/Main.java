@@ -1,11 +1,13 @@
 import com.KartonDCP.Server.MobileSever.SSLMobileServer;
 import com.KartonDCP.Server.MobileSever.Server;
-import com.KartonDCP.Server.MobileSever.TcpMobileServer;
 
 
 public class Main {
     public static void main(final String[] args) throws Exception {
-        Server server = new TcpMobileServer();
+        System.setProperty("javax.net.ssl.trustStore", "karton.store");
+        System.setProperty("javax.net.ssl.keyStorePassword", "zxc123");
+        System.out.println(System.getProperty("javax.net.ssl.trustStore"));
+        Server server = new SSLMobileServer();
         server.startServing();
     }
 }

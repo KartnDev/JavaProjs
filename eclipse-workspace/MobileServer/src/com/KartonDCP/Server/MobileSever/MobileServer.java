@@ -42,6 +42,7 @@ public abstract class MobileServer implements Server{
         ipAddr = InetAddress.getByName(endPoint.getIp());
 
         EntityMapper em = new EntityMapper(dbConfig.getJdbcUrl(), dbConfig.getUserRoot(), dbConfig.getPassword());
+
         em.addToMap(UserEntity.class);
         em.mapEntitiesIfNotExist();
 

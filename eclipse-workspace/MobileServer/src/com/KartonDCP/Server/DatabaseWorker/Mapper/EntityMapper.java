@@ -16,6 +16,7 @@ public class EntityMapper {
     public EntityMapper(String url, String username, String password) throws SQLException {
         queueToEntityMapper = new LinkedHashSet<Class>();
         connectionSource = new JdbcPooledConnectionSource(url, username, password);
+
     }
 
     public void addToMap(Class entity){

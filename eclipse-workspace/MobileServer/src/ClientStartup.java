@@ -1,12 +1,8 @@
-package com.KartonDCP.SDK;
+import com.KartonDCP.SDK.SSLClient;
 
-import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collection;
-import java.util.Vector;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -14,7 +10,9 @@ public class ClientStartup {
 
     public static void main(String[] args) throws UnknownHostException {
 
-        var factory = SocketFactory.getDefault();
+        System.setProperty("javax.net.ssl.trustStore", "karton.store");
+        System.setProperty("javax.net.ssl.keyStorePassword", "zxc123");
+        var factory = SSLSocketFactory.getDefault();
 
 
         ExecutorService pool = Executors.newFixedThreadPool(3);

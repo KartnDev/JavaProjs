@@ -27,6 +27,6 @@ public class DbConfig {
     }
 
     public String getJdbcUrl() {
-        return String.format("jdbc:mysql://%s:%s/%s", addr, port, databaseName);
+        return String.format("jdbc:mysql://%s:%s/%s?autoReconnect=true&useSSL=false", addr, port, databaseName);
     }
 }

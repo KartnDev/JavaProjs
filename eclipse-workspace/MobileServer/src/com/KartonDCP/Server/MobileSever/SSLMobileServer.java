@@ -5,6 +5,7 @@ import com.KartonDCP.Server.MobileSever.Handler.MobileCHandler;
 import com.KartonDCP.Utils.Exceptions.BadConfigException;
 import com.KartonDCP.Utils.Exceptions.InvalidRequestException;
 
+import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import java.io.IOException;
 import java.net.Socket;
@@ -13,6 +14,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SSLMobileServer extends MobileServer implements Server {
+
+    private static final String[] PROTOCOLS = new String[] {"TLSv1.2"};
+
 
     public SSLMobileServer() throws IOException, BadConfigException, SQLException {
         var factory =  SSLServerSocketFactory.getDefault();
@@ -29,6 +33,7 @@ public class SSLMobileServer extends MobileServer implements Server {
 
     @SuppressWarnings("DuplicatedCode")
     protected void clientListen() {
+        ((SSLServerSocket)server).setEnabledProtocols(PROTOCOLS);
         ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
         while (serverRunStatus){
 
