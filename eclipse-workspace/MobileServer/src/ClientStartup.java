@@ -1,4 +1,5 @@
 import com.KartonDCP.SDK.SSLClient;
+import com.KartonDCP.SDK.Status.RegStat;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -17,7 +18,6 @@ public class ClientStartup {
 
         final char[] password = "passphrase".toCharArray();
 
-        System.out.println((new File("keystore").exists()));
 
         final KeyStore keyStore = KeyStore.getInstance(new File("keystore"), password);
 
@@ -33,21 +33,12 @@ public class ClientStartup {
         final SSLSocketFactory factory = context.getSocketFactory();
 
 
-        ExecutorService pool = Executors.newFixedThreadPool(3);
+        SSLClient client  = new SSLClient(InetAddress.getByName("127.0.0.1"), 3304, factory);
 
+        client.randomRegisterAsync().thenAccept((resultStatus) -> {
+            System.out.println(resultStatus.getCode() + " | " + resultStatus.getUserToken());
+        }).get();
 
-        pool.execute(() -> {
-            SSLClient client = null;
-            try {
-                client = new SSLClient(InetAddress.getByName("127.0.0.1"), 3304, factory);
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-            var status = client.randomRegister();
-            System.out.println(status.getCode() + " | " + status.getUserToken());
-        });
-
-        pool.shutdown();
 
 
     }

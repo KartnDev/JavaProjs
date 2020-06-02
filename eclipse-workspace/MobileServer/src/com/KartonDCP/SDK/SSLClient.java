@@ -11,6 +11,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.security.KeyStore;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
 public class SSLClient{
@@ -65,7 +66,6 @@ public class SSLClient{
         innerSock.setEnabledProtocols(protocols);
         innerSock.setEnabledCipherSuites(cipher_suites);
     }
-
 
 
     public RegStat registerFromStr(String request){
@@ -123,13 +123,23 @@ public class SSLClient{
     }
 
 
-    public RegStat randomRegister(){
-       return registerFromStr(RandomWork.requestRandUserReg(appToken));
+    public CompletableFuture<RegStat> randomRegisterAsync(){
+        CompletableFuture<RegStat> supplier;
+        supplier = CompletableFuture.supplyAsync(() -> {
+            return registerFromStr(RandomWork.requestRandUserReg(appToken));
+        });
+        return supplier;
     }
 
-    public RegStat register(String name, String surname, String password, Integer phone_num){
-        return registerFromStr(ReqFormatter.formatRegister(name, surname, password, phone_num.toString(), appToken));
+
+    public CompletableFuture<RegStat> registerAsync(String name, String surname, String password, Integer phone_num){
+        CompletableFuture<RegStat> supplier;
+        supplier = CompletableFuture.supplyAsync(() -> {
+            return registerFromStr(ReqFormatter.formatRegister(name, surname, password, phone_num.toString(), appToken));
+        });
+        return supplier;
     }
+
 
     public void getSession(){
         try {
