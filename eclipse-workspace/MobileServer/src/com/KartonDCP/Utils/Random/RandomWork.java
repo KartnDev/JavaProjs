@@ -5,22 +5,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import static com.KartonDCP.SDK.ReqFormatter.formatTheRequest;
+
 public final class RandomWork {
 
-    private static String formatTheRequest(String methodName, Map<String, String> args, String appToken) {
-        StringBuffer sb = new StringBuffer();
 
-        args.forEach((key, value) -> { // я че в джаваскрипт попал???
-            sb.append(key);
-            sb.append("=");
-            sb.append(value);
-            sb.append("&");
-        });
-
-        sb.deleteCharAt(sb.length() - 1);
-
-        return String.format("%s?%s?%s", appToken, methodName, sb.toString());
-    }
 
 
     public static final String getRandWord(int targetStringLength) {

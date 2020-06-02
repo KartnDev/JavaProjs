@@ -5,13 +5,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -37,14 +33,23 @@ public class ClientStartup {
         final SSLSocketFactory factory = context.getSocketFactory();
 
 
-
         ExecutorService pool = Executors.newFixedThreadPool(3);
 
+        for (int i = 0; i < 1000; i++) {
+            pool.execute(() -> {
+                SSLClient client = null;
+                try {
+                    client = new SSLClient(InetAddress.getByName("127.0.0.1"), 3305, factory);
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
 
-        pool.submit(new SSLClient(InetAddress.getByName("127.0.0.1"), 3305, factory));
+                client.RandomRegister();
 
-
+            });
+        }
         pool.shutdown();
+
 
     }
 }

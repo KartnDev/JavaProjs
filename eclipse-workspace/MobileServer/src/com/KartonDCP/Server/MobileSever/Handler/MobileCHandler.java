@@ -70,13 +70,12 @@ public class MobileCHandler implements Handler{
 
     public void handleTheSession(){
         var now = LocalTime.now();
+        if(!sessionPriorityQueue.isEmpty()) {
 
-        if(now.isAfter(sessionPriorityQueue.peek().component2())){
-            sessionPriorityQueue.removeIf((Pair<SessionSetup, LocalTime> item) ->{
-                return now.isAfter(item.component2());
-            });
+            if (now.isAfter(sessionPriorityQueue.peek().component2())) {
+                sessionPriorityQueue.removeIf((Pair<SessionSetup, LocalTime> item) -> now.isAfter(item.component2()));
+            }
         }
-
     }
 
 

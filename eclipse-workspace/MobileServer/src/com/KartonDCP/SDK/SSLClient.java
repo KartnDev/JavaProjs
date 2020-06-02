@@ -11,7 +11,7 @@ import java.net.Socket;
 import java.security.KeyStore;
 import java.util.concurrent.Callable;
 
-public class SSLClient implements Callable {
+public class SSLClient{
 
     private SSLSocket innerSock;
 
@@ -36,16 +36,43 @@ public class SSLClient implements Callable {
         innerSock.setEnabledCipherSuites(cipher_suites);
     }
 
+    public SSLClient(InetAddress endPoint, int port, File trustKey){
+        try {
+            final char[] password = "passphrase".toCharArray();
+
+            System.out.println((new File("keystore").exists()));
+
+            final KeyStore keyStore = KeyStore.getInstance(new File("keystore"), password);
+
+            final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init(keyStore);
+
+            final KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("NewSunX509");
+            keyManagerFactory.init(keyStore, password);
+
+            final SSLContext context = SSLContext.getInstance("TLS");//"SSL" "TLS"
+            context.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
+
+            final SSLSocketFactory factory = context.getSocketFactory();
+
+            innerSock = (SSLSocket) factory.createSocket(endPoint, port);
+        } catch (IOException e) {
+            System.err.println(e);
+        } catch (Exception e){
+
+        }
+        innerSock.setEnabledProtocols(protocols);
+        innerSock.setEnabledCipherSuites(cipher_suites);
+    }
 
 
-    @Override
-    public Object call() throws Exception {
+
+    public void DoRegisterFromStr(String request){
         try {
             innerSock.startHandshake();
             var out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
 
             // Send request to register the random user
-            var request = RandomWork.requestRandUserReg(appToken);
             System.out.println("SEND REQUEST: " + request);
             out.println(request);
             out.flush();
@@ -83,7 +110,16 @@ public class SSLClient implements Callable {
                 System.err.println(e);
             }
         }
-        return 0;
     }
+
+
+    public void RandomRegister(){
+        DoRegisterFromStr(RandomWork.requestRandUserReg(appToken));
+    }
+
+    public void Register(String name, String surname, String password, Integer phone_num){
+        DoRegisterFromStr(ReqFormatter.formatRegister(name, surname, password, phone_num.toString(), appToken));
+    }
+
 
 }

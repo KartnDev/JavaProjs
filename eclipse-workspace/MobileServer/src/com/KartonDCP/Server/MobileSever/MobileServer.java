@@ -7,17 +7,20 @@ import com.KartonDCP.Server.MobileSever.DirectoryReader.DirReader;
 import com.KartonDCP.Server.MobileSever.Handler.Handler;
 import com.KartonDCP.Server.MobileSever.Handler.MobileCHandler;
 import com.KartonDCP.Server.MobileSever.OperationWorker.ConnSession;
+import com.KartonDCP.Server.MobileSever.Session.SessionSetup;
 import com.KartonDCP.Utils.Exceptions.BadConfigException;
 import com.KartonDCP.Server.MobileSever.ProtocolAndInet.ServerEndPoint;
 import com.KartonDCP.Utils.Exceptions.InvalidRequestException;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
+import kotlin.Pair;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.PriorityQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,7 +40,7 @@ public abstract class MobileServer implements Server{
     protected volatile boolean serverRunStatus;
     protected volatile ServerSocket server;
 
-    protected volatile PriorityQueue<ConnSession> queue;
+    protected volatile PriorityQueue<Pair<SessionSetup, LocalTime>> queue;
     private volatile ExecutorService pool;
     private volatile Thread clientLoop;
 
@@ -57,7 +60,7 @@ public abstract class MobileServer implements Server{
 
         EntityMapper em = new EntityMapper(dbConfig.getJdbcUrl(), dbConfig.getUserRoot(), dbConfig.getPassword());
 
-        queue = new PriorityQueue<ConnSession>();
+        queue = new PriorityQueue<>();
 
         em.addToMap(UserEntity.class);
         em.mapEntitiesIfNotExist();
