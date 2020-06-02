@@ -91,14 +91,14 @@ public class SSLClient{
                 System.out.println("Sent: " + uuid);
                 out.println(uuid);
                 out.flush();
-                out.close();
+
                 // Read the first batch of the TcpServer response bytes.
 
                 response = StreamUtils.InputStreamToString(innerSock.getInputStream());
 
                 logger.info("Received status: " + response);
 
-
+                out.close();
 
                 return new RegStat(RegStatusCode.OK, token);
             }
