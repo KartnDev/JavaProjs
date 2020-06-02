@@ -72,17 +72,20 @@ public class Register implements OperationWorker {
                     "Wait for \"ok\" status. Send echo UUID=%s back to server to commit it",
                     user.getUserToken(),
                     commitToken);
-
+            logger.info("Wait for commit");
             // Send to client that server received the request and create the user and are waiting for commit
             clientSock.getOutputStream().write(serverOperationStatus.getBytes("UTF8"));
 
             // Loads user echo with UUID
             var clientCommitEcho = StreamUtils.InputStreamToString(clientSock.getInputStream());
 
+
             //Commit user
             if(clientCommitEcho.trim().equals(commitToken.toString())){
                 usersDao.create(user);
-                clientSock.getOutputStream().write("Committed; Status: 0".getBytes("UTF8"));
+
+                clientSock.getOutputStream().write("Committed; Status: OK".getBytes("UTF8"));
+
                 logger.info(user.toString() + "Registered, Committed");
             } else {
                 clientSock.getOutputStream().write("Rollback; Status: 103 client didnt send back UUID echo token!"

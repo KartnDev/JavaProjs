@@ -1,5 +1,7 @@
 package com.KartonDCP.SDK;
 
+import com.KartonDCP.SDK.Status.RegStat;
+import com.KartonDCP.SDK.Status.RegStatusCode;
 import com.KartonDCP.Utils.Random.RandomWork;
 import com.KartonDCP.Utils.Streams.StreamUtils;
 
@@ -7,9 +9,9 @@ import javax.net.SocketFactory;
 import javax.net.ssl.*;
 import java.io.*;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.security.KeyStore;
-import java.util.concurrent.Callable;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 public class SSLClient{
 
@@ -21,11 +23,10 @@ public class SSLClient{
     private static final String[] protocols = new String[] {"TLSv1.3"};
     private static final String[] cipher_suites = new String[] {"TLS_AES_128_GCM_SHA256"};
 
-
+    private static final Logger logger = Logger.getGlobal();
 
     public SSLClient(InetAddress endPoint, int port, SocketFactory factory){
         try {
-
             innerSock = (SSLSocket) factory.createSocket(endPoint, port);
         } catch (IOException e) {
             System.err.println(e);
@@ -40,9 +41,9 @@ public class SSLClient{
         try {
             final char[] password = "passphrase".toCharArray();
 
-            System.out.println((new File("keystore").exists()));
+            System.out.println(trustKey.exists() ? "TrustKey found !" : "No Trust key!" );
 
-            final KeyStore keyStore = KeyStore.getInstance(new File("keystore"), password);
+            final KeyStore keyStore = KeyStore.getInstance(trustKey, password);
 
             final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(keyStore);
@@ -59,7 +60,7 @@ public class SSLClient{
         } catch (IOException e) {
             System.err.println(e);
         } catch (Exception e){
-
+            System.err.println(e);
         }
         innerSock.setEnabledProtocols(protocols);
         innerSock.setEnabledCipherSuites(cipher_suites);
@@ -67,19 +68,21 @@ public class SSLClient{
 
 
 
-    public void DoRegisterFromStr(String request){
+    public RegStat registerFromStr(String request){
         try {
             innerSock.startHandshake();
             var out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
 
             // Send request to register the random user
-            System.out.println("SEND REQUEST: " + request);
+            logger.info("SEND REQUEST: " + request);
             out.println(request);
             out.flush();
 
             //Listening the response from server
             var response = StreamUtils.InputStreamToString(innerSock.getInputStream());
-            System.out.println("RECEIVED: " + response);
+            logger.info("RECEIVED: " + response);
+
+            var token = UUID.fromString(response.split("user_token=")[1].split("&")[0]);
 
             if (!response.contains("error=100"))
             {
@@ -88,38 +91,69 @@ public class SSLClient{
                 System.out.println("Sent: " + uuid);
                 out.println(uuid);
                 out.flush();
-
+                out.close();
                 // Read the first batch of the TcpServer response bytes.
 
                 response = StreamUtils.InputStreamToString(innerSock.getInputStream());
 
-                System.out.println("Received status: " + response);
+                logger.info("Received status: " + response);
+
+
+
+                return new RegStat(RegStatusCode.OK, token);
             }
             else
             {
-                System.out.println("User exists!");
+                return new RegStat(RegStatusCode.USER_EXISTS, null);
             }
-            out.close();
+
 
         } catch (IOException e) {
             System.err.println(e);
+            return new RegStat(RegStatusCode.IO_ERROR, null);
         } finally {
             try {
                 innerSock.close();
             } catch (IOException e) {
                 System.err.println(e);
+                return new RegStat(RegStatusCode.SERVER_ERROR, null);
             }
         }
+
     }
 
 
-    public void RandomRegister(){
-        DoRegisterFromStr(RandomWork.requestRandUserReg(appToken));
+    public RegStat randomRegister(){
+       return registerFromStr(RandomWork.requestRandUserReg(appToken));
     }
 
-    public void Register(String name, String surname, String password, Integer phone_num){
-        DoRegisterFromStr(ReqFormatter.formatRegister(name, surname, password, phone_num.toString(), appToken));
+    public RegStat register(String name, String surname, String password, Integer phone_num){
+        return registerFromStr(ReqFormatter.formatRegister(name, surname, password, phone_num.toString(), appToken));
     }
+
+    public void getSession(){
+        try {
+            innerSock.startHandshake();
+
+            var out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
+
+            // Send request to register the random user
+            var request = ReqFormatter.formatTheRequest("reg_session", null, appToken);
+            System.out.println("SEND REQUEST: " + request);
+            out.println(request);
+            out.flush();
+
+            //Listening the response from server
+            var response = StreamUtils.InputStreamToString(innerSock.getInputStream());
+            System.out.println("RECEIVED: " + response);
+
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+    }
+
 
 
 }

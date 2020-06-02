@@ -35,19 +35,18 @@ public class ClientStartup {
 
         ExecutorService pool = Executors.newFixedThreadPool(3);
 
-        for (int i = 0; i < 1000; i++) {
-            pool.execute(() -> {
-                SSLClient client = null;
-                try {
-                    client = new SSLClient(InetAddress.getByName("127.0.0.1"), 3305, factory);
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
 
-                client.RandomRegister();
+        pool.execute(() -> {
+            SSLClient client = null;
+            try {
+                client = new SSLClient(InetAddress.getByName("127.0.0.1"), 3304, factory);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            var status = client.randomRegister();
+            System.out.println(status.getCode() + " | " + status.getUserToken());
+        });
 
-            });
-        }
         pool.shutdown();
 
 
