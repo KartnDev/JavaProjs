@@ -42,7 +42,7 @@ public class SSLClient implements Callable {
     public Object call() throws Exception {
         try {
             innerSock.startHandshake();
-            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
+            var out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
 
             // Send request to register the random user
             var request = RandomWork.requestRandUserReg(appToken);

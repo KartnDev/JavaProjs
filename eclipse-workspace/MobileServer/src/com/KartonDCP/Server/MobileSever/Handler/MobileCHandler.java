@@ -6,25 +6,27 @@ import com.KartonDCP.Server.MobileSever.OperationWorker.ConnSession;
 import com.KartonDCP.Server.MobileSever.OperationWorker.OperationWorker;
 import com.KartonDCP.Server.MobileSever.OperationWorker.Register;
 import com.KartonDCP.Server.MobileSever.ProtocolAndInet.ProtocolParser;
+import com.KartonDCP.Server.MobileSever.Session.SessionSetup;
 import com.KartonDCP.Utils.Exceptions.InvalidRequestException;
 import com.KartonDCP.Utils.Streams.StreamUtils;
 import com.jcabi.aspects.Async;
+import kotlin.Pair;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.PriorityQueue;
-import java.util.Timer;
 import java.util.concurrent.Future;
 
 public class MobileCHandler implements Handler{
 
     private final Socket clientSocket;
-    private final PriorityQueue<ConnSession> sessionPriorityQueue;
+    private final PriorityQueue<Pair<SessionSetup, LocalTime>> sessionPriorityQueue;
     private final String token;
     private final DbConfig dbConfig;
 
-    public MobileCHandler(Socket clientSocket, final PriorityQueue<ConnSession> q, String token, DbConfig dbConfig){
+    public MobileCHandler(Socket clientSocket, final PriorityQueue<Pair<SessionSetup, LocalTime>> q, String token, DbConfig dbConfig){
         this.clientSocket = clientSocket;
         this.sessionPriorityQueue = q;
         this.token = token;
@@ -43,6 +45,8 @@ public class MobileCHandler implements Handler{
         var args = requestParser.getArgs();
 
         OperationWorker worker = null;
+
+        handleTheSession();
 
         switch (method){
             case Register -> {
@@ -63,18 +67,17 @@ public class MobileCHandler implements Handler{
         return false; // NEVER DOES IT AND NEVER GOES HERE...
     }
 
-    private void backgroundSessionScheduler(){
-        new java.util.Timer().schedule(
-                new java.util.TimerTask() {
-                    @Override
-                    public void run() {
 
-                    }
-                },
-                5000
-        );
+    public void handleTheSession(){
+        var now = LocalTime.now();
+
+        if(now.isAfter(sessionPriorityQueue.peek().component2())){
+            sessionPriorityQueue.removeIf((Pair<SessionSetup, LocalTime> item) ->{
+                return now.isAfter(item.component2());
+            });
+        }
+
     }
-
 
 
 
