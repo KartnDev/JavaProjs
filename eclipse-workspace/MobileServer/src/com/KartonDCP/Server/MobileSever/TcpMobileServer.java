@@ -20,49 +20,4 @@ public final class TcpMobileServer extends MobileServer {
 
         server.bind(new InetSocketAddress(ipAddr, endPoint.getPort()), endPoint.MAX_CONNECTIONS);
     }
-
-
-    @SuppressWarnings("DuplicatedCode")
-    protected void clientListen() {
-        ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
-        while (serverRunStatus){
-
-            Socket client = null;
-            try {
-                client = server.accept();
-            } catch (IOException e) {
-                e.printStackTrace();
-                logger.info(e, "Exception while accepting");
-            }
-            Socket cFinalSocket = client;
-
-                pool.execute(() -> {
-                    Handler handler = new MobileCHandler(cFinalSocket, token, dbConfig);
-                    var exceptionMsg = "Exception in pool thread while handling";
-                    try {
-                        handler.handleSync();
-                        logger.info("Start new handler t client");
-                    }  catch (InvalidRequestException e) {
-                        e.printStackTrace();
-                        logger.info(e, exceptionMsg);
-                    } catch (NoSuchFieldException e) {
-                        logger.info(e, exceptionMsg);
-                        e.printStackTrace();
-                    } catch (SQLException e) {
-                        logger.info(e, exceptionMsg);
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        logger.info(e, exceptionMsg);
-                        e.printStackTrace();
-                    }
-                });
-        }
-    }
-
-    @Override
-    public boolean waitAndShutdown() {
-        return false;
-    }
-
-
 }

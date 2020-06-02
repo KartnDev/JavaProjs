@@ -42,6 +42,7 @@ public class ProtocolParser {
     public ProtocolMethod getMethodName() {
         ProtocolMethod title = switch (split[1]) {
             case "register" -> ProtocolMethod.Register;
+            case "reg_session" -> ProtocolMethod.ConnSession;
             default -> ProtocolMethod.BadMethod;
         };
         return title;

@@ -19,6 +19,8 @@ public class SSLMobileServer extends MobileServer implements Server {
     private static final String[] cipher_suites = new String[] {"TLS_AES_128_GCM_SHA256"};
 
     public SSLMobileServer() throws  Exception {
+
+        // it takes me ONLY 12 hrs ;)
         final char[] password = "passphrase".toCharArray();
 
         System.out.println((new File("keystore").exists()));
@@ -42,47 +44,6 @@ public class SSLMobileServer extends MobileServer implements Server {
     }
 
 
-    @Override
-    public boolean waitAndShutdown() {
-        return false;
-    }
 
 
-
-    @SuppressWarnings("DuplicatedCode")
-    protected void clientListen() {
-        ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
-        while (serverRunStatus){
-
-            Socket client = null;
-            try {
-                client = server.accept();
-            } catch (IOException e) {
-                e.printStackTrace();
-                logger.info(e, "Exception while accepting");
-            }
-            Socket cFinalSocket = client;
-
-            pool.execute(() -> {
-                Handler handler = new MobileCHandler(cFinalSocket, token, dbConfig);
-                var exceptionMsg = "Exception in pool thread while handling";
-                try {
-                    handler.handleSync();
-                    logger.info("Start new handler t client");
-                }  catch (InvalidRequestException e) {
-                    e.printStackTrace();
-                    logger.info(e, exceptionMsg);
-                } catch (NoSuchFieldException e) {
-                    logger.info(e, exceptionMsg);
-                    e.printStackTrace();
-                } catch (SQLException e) {
-                    logger.info(e, exceptionMsg);
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    logger.info(e, exceptionMsg);
-                    e.printStackTrace();
-                }
-            });
-        }
-    }
 }
