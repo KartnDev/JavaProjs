@@ -9,7 +9,8 @@ import com.KartonDCP.Server.MobileSever.ProtocolAndInet.ProtocolParser;
 import com.KartonDCP.Server.MobileSever.Session.SessionSetup;
 import com.KartonDCP.Utils.Exceptions.InvalidRequestException;
 import com.KartonDCP.Utils.Streams.StreamUtils;
-import com.jcabi.aspects.Async;
+import com.j256.ormlite.logger.Logger;
+import com.j256.ormlite.logger.LoggerFactory;
 import kotlin.Pair;
 
 import java.io.IOException;
@@ -19,14 +20,16 @@ import java.time.LocalTime;
 import java.util.PriorityQueue;
 import java.util.concurrent.Future;
 
-public class MobileCHandler implements Handler{
+public class MobileCHandler implements Handler {
 
     private final Socket clientSocket;
     private final PriorityQueue<Pair<SessionSetup, LocalTime>> sessionPriorityQueue;
     private final String token;
     private final DbConfig dbConfig;
 
-    public MobileCHandler(Socket clientSocket, final PriorityQueue<Pair<SessionSetup, LocalTime>> q, String token, DbConfig dbConfig){
+    protected final Logger logger = LoggerFactory.getLogger(MobileCHandler.class);
+
+    public MobileCHandler(Socket clientSocket, final PriorityQueue<Pair<SessionSetup, LocalTime>> q, String token, DbConfig dbConfig) {
         this.clientSocket = clientSocket;
         this.sessionPriorityQueue = q;
         this.token = token;
@@ -39,7 +42,10 @@ public class MobileCHandler implements Handler{
 
         String request = StreamUtils.InputStreamToString(inputStream);
 
-        final var requestParser = new ProtocolParser(request, token);
+        ProtocolParser requestParser = null;
+
+        requestParser = new ProtocolParser(request, token);
+
 
         var method = requestParser.getMethodName();
         var args = requestParser.getArgs();
@@ -48,29 +54,29 @@ public class MobileCHandler implements Handler{
 
         handleTheSession();
 
-        switch (method){
+        switch (method) {
             case Register -> {
                 worker = new Register(clientSocket, args, dbConfig);
-                worker.executeWorkSync();
+                return worker.executeWorkSync();
             }
             case ConnSession -> {
                 worker = new ConnSession(clientSocket, args, dbConfig).ApproveSessions(sessionPriorityQueue);
-                worker.executeWorkSync();
+                return worker.executeWorkSync();
             }
-
-            default -> {
+            case BadMethod -> {
                 return false;
             }
 
         }
 
+
         return false; // NEVER DOES IT AND NEVER GOES HERE...
     }
 
 
-    public void handleTheSession(){
+    public void handleTheSession() {
         var now = LocalTime.now();
-        if(!sessionPriorityQueue.isEmpty()) {
+        if (!sessionPriorityQueue.isEmpty()) {
 
             if (now.isAfter(sessionPriorityQueue.peek().component2())) {
                 sessionPriorityQueue.removeIf((Pair<SessionSetup, LocalTime> item) -> now.isAfter(item.component2()));
@@ -80,19 +86,57 @@ public class MobileCHandler implements Handler{
 
 
 
-    @Async
     @Override
-    public Future<Long> handleAsync() {
-        return null;
+    public boolean handleAsync() throws IOException {
+        var inputStream = clientSocket.getInputStream();
+
+        var requestResult = StreamUtils.InputStreamToStringAsync(inputStream);
+
+        requestResult.thenAccept((String result) -> {
+
+
+            ProtocolParser requestParser = null;
+            try {
+                requestParser = new ProtocolParser(result, token);
+
+
+                var method = requestParser.getMethodName();
+                var args = requestParser.getArgs();
+
+                OperationWorker worker = null;
+
+                handleTheSession();
+
+                switch (method) {
+                    case Register -> {
+                        worker = new Register(clientSocket, args, dbConfig);
+                        worker.executeWorkAsync();
+                    }
+                    case ConnSession -> {
+                        worker = new ConnSession(clientSocket, args, dbConfig).ApproveSessions(sessionPriorityQueue);
+                        worker.executeWorkAsync();
+                    }
+                    case BadMethod -> logger.info("Catch the unhandled operation!");
+
+                }
+            } catch (InvalidRequestException e) {
+                logger.error(e, "Was invalid operation in handler!");
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error(e, "UNHANDLED ERROR!");
+            }
+        });
+        return !requestResult.isCompletedExceptionally();
     }
 
     @Override
     public boolean cancel() {
-        return false;
+        return false; // TODO
     }
 
     @Override
     public void candleCurrentAndStop() {
-
+        // TODO
     }
 }

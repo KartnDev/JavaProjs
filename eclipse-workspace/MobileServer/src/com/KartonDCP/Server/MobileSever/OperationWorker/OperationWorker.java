@@ -6,6 +6,6 @@ import java.util.concurrent.Future;
 
 public interface OperationWorker {
     boolean executeWorkSync() throws SQLException, NoSuchFieldException, IOException;
-    Future<Long> executeWorkAsync();
+    boolean executeWorkAsync() throws SQLException, IOException;
     boolean cancel();
 }

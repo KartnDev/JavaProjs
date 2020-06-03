@@ -9,7 +9,7 @@ import java.util.concurrent.Future;
 
 public interface Handler {
     boolean handleSync() throws IOException, InvalidRequestException, NoSuchFieldException, SQLException;
-    Future<Long> handleAsync();
+    boolean handleAsync() throws IOException;
     boolean cancel();
     void candleCurrentAndStop();
 }

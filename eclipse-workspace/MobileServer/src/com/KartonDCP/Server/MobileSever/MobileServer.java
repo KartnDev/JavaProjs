@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 
 public abstract class MobileServer implements Server{
 
-    protected final Logger logger = LoggerFactory.getLogger(TcpMobileServer.class);
+    protected final Logger logger = LoggerFactory.getLogger(MobileServer.class);
 
     protected static final int MAX_T = 3;
 

@@ -5,7 +5,6 @@ import com.KartonDCP.SDK.Status.RegStatusCode;
 import com.KartonDCP.Utils.Random.RandomWork;
 import com.KartonDCP.Utils.Streams.StreamUtils;
 import kotlin.Deprecated;
-import org.aspectj.lang.annotation.DeclareWarning;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.*;
@@ -14,6 +13,7 @@ import java.net.InetAddress;
 import java.security.KeyStore;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
 public class SSLClient{
@@ -81,7 +81,7 @@ public class SSLClient{
             out.flush();
 
             //Listening the response from server
-            var response = StreamUtils.InputStreamToString(innerSock.getInputStream());
+            var response = StreamUtils.InputStreamToStringAsync(innerSock.getInputStream()).get(); // async get
             logger.info("RECEIVED: " + response);
 
             var token = UUID.fromString(response.split("user_token=")[1].split("&")[0]);
@@ -96,7 +96,7 @@ public class SSLClient{
 
                 // Read the first batch of the TcpServer response bytes.
 
-                response = StreamUtils.InputStreamToString(innerSock.getInputStream());
+                response = StreamUtils.InputStreamToStringAsync(innerSock.getInputStream()).get();  // async get
 
                 logger.info("Received status: " + response);
 
@@ -110,7 +110,7 @@ public class SSLClient{
             }
 
 
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException | ExecutionException e) {
             System.err.println(e);
             return new RegStat(RegStatusCode.IO_ERROR, null);
         } finally {
@@ -127,18 +127,14 @@ public class SSLClient{
     @Deprecated(message = "Test only")
     public CompletableFuture<RegStat> randomRegisterAsync(){
         CompletableFuture<RegStat> supplier;
-        supplier = CompletableFuture.supplyAsync(() -> {
-            return registerFromStr(RandomWork.requestRandUserReg(appToken));
-        });
+        supplier = CompletableFuture.supplyAsync(() -> registerFromStr(RandomWork.requestRandUserReg(appToken)));
         return supplier;
     }
 
 
     public CompletableFuture<RegStat> registerAsync(String name, String surname, String password, Integer phone_num){
         CompletableFuture<RegStat> supplier;
-        supplier = CompletableFuture.supplyAsync(() -> {
-            return registerFromStr(ReqFormatter.formatRegister(name, surname, password, phone_num.toString(), appToken));
-        });
+        supplier = CompletableFuture.supplyAsync(() -> registerFromStr(ReqFormatter.formatRegister(name, surname, password, phone_num.toString(), appToken)));
         return supplier;
     }
 
@@ -156,7 +152,7 @@ public class SSLClient{
             out.flush();
 
             //Listening the response from server
-            var response = StreamUtils.InputStreamToString(innerSock.getInputStream());
+            var response = StreamUtils.InputStreamToStringAsync(innerSock.getInputStream());
             System.out.println("RECEIVED: " + response);
 
 

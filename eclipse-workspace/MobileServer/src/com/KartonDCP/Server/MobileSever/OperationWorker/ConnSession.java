@@ -58,8 +58,8 @@ public class ConnSession implements OperationWorker{
     }
 
     @Override
-    public Future<Long> executeWorkAsync() {
-        return null;
+    public boolean executeWorkAsync() {
+        return false;
     }
 
     @Override
