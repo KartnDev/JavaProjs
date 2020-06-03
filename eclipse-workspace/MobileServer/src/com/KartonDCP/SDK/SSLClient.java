@@ -4,6 +4,8 @@ import com.KartonDCP.SDK.Status.RegStat;
 import com.KartonDCP.SDK.Status.RegStatusCode;
 import com.KartonDCP.Utils.Random.RandomWork;
 import com.KartonDCP.Utils.Streams.StreamUtils;
+import kotlin.Deprecated;
+import org.aspectj.lang.annotation.DeclareWarning;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.*;
@@ -122,7 +124,7 @@ public class SSLClient{
 
     }
 
-
+    @Deprecated(message = "Test only")
     public CompletableFuture<RegStat> randomRegisterAsync(){
         CompletableFuture<RegStat> supplier;
         supplier = CompletableFuture.supplyAsync(() -> {
