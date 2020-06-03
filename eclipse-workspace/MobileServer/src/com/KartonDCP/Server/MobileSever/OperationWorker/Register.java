@@ -11,7 +11,6 @@ import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 import kotlin.Pair;
 
-
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.net.Socket;
@@ -20,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class Register implements OperationWorker {
@@ -27,28 +27,25 @@ public class Register implements OperationWorker {
     private final Map<String, String> args;
     private final Socket clientSock;
     private final DbConfig dbConfig;
-
-    private JdbcPooledConnectionSource connectionSource = null;
-
     private final Logger logger = LoggerFactory.getLogger(Register.class);
-
     private final String name;
     private final String surname;
     private final String password;
     private final String phoneNum;
+    private JdbcPooledConnectionSource connectionSource = null;
 
 
-    public Register(Socket clientSock, Map<String, String> args, DbConfig dbConfig) throws InvalidRequestException {
+    public Register(Socket clientSock, Map<String, String> args, DbConfig dbConfig) throws InvalidRequestException, IOException {
         this.clientSock = clientSock;
         this.dbConfig = dbConfig;
         this.args = args;
 
-        if(containsOkArgs() || (validateName() && validatePassword() && validatePhoneNum() & validateSurname())){
+        if (containsOkArgs() || (validateName() && validatePassword() && validatePhoneNum() & validateSurname())) {
             name = args.get("name");
             surname = args.get("surname");
             password = args.get("password");
             phoneNum = args.get("phone_num");
-        }else {
+        } else {
             throw new InvalidRequestException("Bad arguments in request to execute operation!");
         }
     }
@@ -61,8 +58,8 @@ public class Register implements OperationWorker {
         var serverOperationStatus = "error = 105; Error on operation";
 
         connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
-                                                                  dbConfig.getUserRoot(),
-                                                                  dbConfig.getPassword());
+                dbConfig.getUserRoot(),
+                dbConfig.getPassword());
 
         Dao<UserEntity, Long> usersDao = DaoManager.createDao(connectionSource, UserEntity.class);
 
@@ -72,7 +69,7 @@ public class Register implements OperationWorker {
             var commitToken = UUID.randomUUID();
 
             serverOperationStatus = String.format("user_token=%s&user user on pending.. " +
-                    "Wait for \"ok\" status. Send echo UUID=%s back to server to commit it",
+                            "Wait for \"ok\" status. Send echo UUID=%s back to server to commit it",
                     user.getUserToken(),
                     commitToken);
             logger.info("Wait for commit");
@@ -84,112 +81,7 @@ public class Register implements OperationWorker {
 
 
             //Commit user
-            if(clientCommitEcho.trim().equals(commitToken.toString())){
-                usersDao.create(user);
-
-                clientSock.getOutputStream().write("Committed; Status: OK".getBytes("UTF8"));
-
-                logger.info(user.toString() + "Registered, Committed");
-            } else {
-                clientSock.getOutputStream().write("Rollback; Status: 103 client didnt send back UUID echo token!"
-                                .getBytes("UTF8"));
-
-                logger.info(user.toString() + "Rollback, Client not approved operation");
-            }
-
-        } else { // user exists!
-            serverOperationStatus = String.format("error=100; phone_num=%s already exists!", phoneNum);
-            clientSock.getOutputStream().write(serverOperationStatus.getBytes("UTF8"));
-        }
-
-        return !endStatus;
-    }
-
-
-    private boolean isUserExists(@NotNull String userPhoneNum,@NotNull Dao<UserEntity, Long> usersDao) throws SQLException {
-
-        var item = usersDao.queryBuilder().where().eq("phoneNum", phoneNum.toString()).query();
-        return item.size() == 0;
-    }
-
-    private CompletableFuture<Boolean> isUserExistsAsync(@NotNull String userPhoneNum,
-                                                         @NotNull Dao<UserEntity, Long> usersDao){
-
-        return CompletableFuture.supplyAsync(() ->{
-            List<UserEntity> item;
-            try {
-                item = usersDao.queryBuilder().where().eq("phoneNum", phoneNum.toString()).query();
-            } catch (SQLException e) {
-                e.printStackTrace();
-                logger.error(e, "error while searching user");
-                return false;
-            }
-            return item.size() == 0;
-        });
-    }
-
-
-
-
-
-    @SuppressWarnings("DuplicatedCode")
-    @Override
-    public boolean executeWorkAsync() throws SQLException, IOException {
-
-        boolean endStatus = false;
-
-
-
-        connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
-                dbConfig.getUserRoot(),
-                dbConfig.getPassword());
-
-
-        CompletableFuture.supplyAsync(() -> {
-            try {
-                Dao<UserEntity, Long> usersDao = DaoManager.createDao(connectionSource, UserEntity.class);
-                var user = new UserEntity(UUID.randomUUID(), name, surname, password, phoneNum);
-                return new Pair<Boolean, UserEntity>(isUserExists(user.getPhoneNum(), usersDao), user);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return new Pair<Boolean, UserEntity>(false, null);
-            }
-        }).thenApplyAsync((entityPair) ->{
-            if (entityPair.component1()) { // No such user with this phone number
-                var commitToken = UUID.randomUUID();
-
-                var serverOperationStatus = String.format("user_token=%s&user user on pending.. " +
-                                "Wait for \"ok\" status. Send echo UUID=%s back to server to commit it",
-                        entityPair.component2().getUserToken(),
-                        commitToken);
-                logger.info("Wait for commit");
-                // Send to client that server received the request and create the user and are waiting for commit
-                try {
-                    clientSock.getOutputStream().write(serverOperationStatus.getBytes("UTF8"));
-                    return true;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return false;
-        }).then((senderStatus) -> {
-            if (senderStatus) {
-                // Loads user echo with UUID
-                try {
-                    var clientCommitEcho = StreamUtils.InputStreamToString(clientSock.getInputStream());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return;
-        });
-
-
-
-
-
-            //Commit user
-            if(clientCommitEcho.trim().equals(commitToken.toString())){
+            if (clientCommitEcho.trim().equals(commitToken.toString())) {
                 usersDao.create(user);
 
                 clientSock.getOutputStream().write("Committed; Status: OK".getBytes("UTF8"));
@@ -207,15 +99,128 @@ public class Register implements OperationWorker {
             clientSock.getOutputStream().write(serverOperationStatus.getBytes("UTF8"));
         }
 
-
-
-
-
-
-
         return !endStatus;
+    }
 
 
+    private boolean isUserExists(@NotNull String userPhoneNum, @NotNull Dao<UserEntity, Long> usersDao) throws SQLException {
+
+        var item = usersDao.queryBuilder().where().eq("phoneNum", phoneNum.toString()).query();
+        return item.size() == 0;
+    }
+
+    private CompletableFuture<Boolean> isUserExistsAsync(@NotNull String userPhoneNum,
+                                                         @NotNull Dao<UserEntity, Long> usersDao) {
+
+        return CompletableFuture.supplyAsync(() -> {
+            List<UserEntity> item;
+            try {
+                item = usersDao.queryBuilder().where().eq("phoneNum", phoneNum.toString()).query();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                logger.error(e, "error while searching user");
+                return false;
+            }
+            return item.size() == 0;
+        });
+    }
+
+
+    @SuppressWarnings("DuplicatedCode")
+    @Override
+    public boolean executeWorkAsync() throws SQLException, IOException {
+
+        boolean endStatus = false;
+
+        AtomicReference<Dao<UserEntity, Long>> usersDao = null;
+
+        connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
+                dbConfig.getUserRoot(),
+                dbConfig.getPassword());
+
+        var commitToken = UUID.randomUUID();
+
+        var user = new UserEntity(UUID.randomUUID(), name, surname, password, phoneNum);
+
+        // TODO TEST IT
+        var runner = CompletableFuture.supplyAsync(() -> {
+            try {
+                usersDao.set(DaoManager.createDao(connectionSource, UserEntity.class));
+
+                return new Pair<Boolean, UserEntity>(isUserExists(user.getPhoneNum(), usersDao.get()), user);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return new Pair<Boolean, UserEntity>(false, null);
+            }
+        }).thenApplyAsync((entityPair) -> {
+            if (entityPair.component1()) { // No such user with this phone number
+
+
+                var serverOperationStatus = String.format("user_token=%s&user user on pending.. " +
+                                "Wait for \"ok\" status. Send echo UUID=%s back to server to commit it",
+                        entityPair.component2().getUserToken(),
+                        commitToken);
+                logger.info("Wait for commit");
+                // Send to client that server received the request and create the user and are waiting for commit
+                try {
+                    clientSock.getOutputStream().write(serverOperationStatus.getBytes("UTF8"));
+                    return true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else { // user exists!
+                var status = String.format("error=100; phone_num=%s already exists! (SQL MAY DUMPED)", phoneNum);
+                try {
+                    clientSock.getOutputStream().write(status.getBytes("UTF8"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return false;
+        }).thenApplyAsync((senderStatus) -> {
+            if (senderStatus) {
+                // Loads user echo with UUID
+                try {
+                    var clientCommitEcho = StreamUtils.InputStreamToString(clientSock.getInputStream());
+                    return clientCommitEcho.trim().equals(commitToken.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return false;
+        }).thenAcceptAsync((clientCommitOk) -> {
+            //Commit user
+            if (clientCommitOk) {
+                //TODO REFACTOR IT ?
+
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        usersDao.get().create(user);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                }).thenRunAsync(() -> {
+                    try {
+                        clientSock.getOutputStream().write("Committed; Status: OK".getBytes("UTF8"));
+                        logger.info(user.toString() + "Registered, Committed");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+            } else {
+                try {
+                    clientSock.getOutputStream().write("Rollback; Status: 103 client didnt send back UUID echo token!"
+                            .getBytes("UTF8"));
+                    logger.info(user.toString() + "Rollback, Client not approved operation");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        return !runner.isCompletedExceptionally();
     }
 
 
@@ -224,23 +229,26 @@ public class Register implements OperationWorker {
         return false;
     }
 
-    private boolean containsOkArgs(){
+    private boolean containsOkArgs() {
         return args.containsKey("name")
                 && args.containsKey("surname")
                 && args.containsKey("password")
                 && args.containsKey("phone_num");
     }
-    private boolean validateName(){
+
+    private boolean validateName() {
         return args.get("name").length() > 1;
     }
 
-    private boolean validateSurname(){
-        return  args.get("surname").length() > 2;
+    private boolean validateSurname() {
+        return args.get("surname").length() > 2;
     }
-    private boolean validatePassword(){
+
+    private boolean validatePassword() {
         return args.get("password").length() > 8;
     }
-    private boolean validatePhoneNum(){
+
+    private boolean validatePhoneNum() {
         return args.get("phone_num").length() > 7;
     }
 

@@ -124,7 +124,7 @@ public class SSLClient{
 
     }
 
-    @Deprecated(message = "Test only")
+
     public CompletableFuture<RegStat> randomRegisterAsync(){
         CompletableFuture<RegStat> supplier;
         supplier = CompletableFuture.supplyAsync(() -> registerFromStr(RandomWork.requestRandUserReg(appToken)));
