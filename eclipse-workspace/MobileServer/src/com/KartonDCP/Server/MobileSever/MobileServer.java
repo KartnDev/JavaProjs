@@ -22,6 +22,7 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.PriorityQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -142,6 +143,10 @@ public abstract class MobileServer implements Server{
                 }
                  catch (IOException e) {
                     logger.info(e, exceptionMsg);
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
             });

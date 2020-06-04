@@ -1,5 +1,6 @@
 import com.KartonDCP.SDK.SSLClient;
 import com.KartonDCP.SDK.Status.RegStat;
+import com.KartonDCP.Utils.Random.RandomWork;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -34,7 +35,7 @@ public class ClientStartup {
 
 
         SSLClient client  = new SSLClient(InetAddress.getByName("127.0.0.1"), 3304, factory);
-
+        
         client.randomRegisterAsync().thenAccept((resultStatus) -> {
             System.out.println(resultStatus.getCode() + " | " + resultStatus.getUserToken());
         }).get();

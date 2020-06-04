@@ -18,6 +18,7 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.PriorityQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class MobileCHandler implements Handler {
@@ -87,7 +88,7 @@ public class MobileCHandler implements Handler {
 
 
     @Override
-    public boolean handleAsync() throws IOException {
+    public boolean handleAsync() throws IOException, ExecutionException, InterruptedException {
         var inputStream = clientSocket.getInputStream();
 
         var requestResult = StreamUtils.InputStreamToStringAsync(inputStream);
@@ -126,7 +127,11 @@ public class MobileCHandler implements Handler {
                 e.printStackTrace();
                 logger.error(e, "UNHANDLED ERROR!");
             }
-        });
+
+        }).get();
+
+
+
         return !requestResult.isCompletedExceptionally();
     }
 
