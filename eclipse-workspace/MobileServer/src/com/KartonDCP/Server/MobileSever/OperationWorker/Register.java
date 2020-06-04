@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ExecutionException;
 
 
 public class Register implements OperationWorker {
@@ -128,29 +128,35 @@ public class Register implements OperationWorker {
 
     @SuppressWarnings("DuplicatedCode")
     @Override
-    public boolean executeWorkAsync() throws SQLException, IOException {
+    public boolean executeWorkAsync() throws SQLException, IOException, ExecutionException, InterruptedException {
 
         boolean endStatus = false;
 
-        AtomicReference<Dao<UserEntity, Long>> usersDao = null;
-
-        connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
-                dbConfig.getUserRoot(),
-                dbConfig.getPassword());
 
         var commitToken = UUID.randomUUID();
 
         var user = new UserEntity(UUID.randomUUID(), name, surname, password, phoneNum);
 
         // TODO TEST IT
-        var runner = CompletableFuture.supplyAsync(() -> {
+        CompletableFuture.supplyAsync(() -> {
+            Dao<UserEntity, Long> usersDao = null;
             try {
-                usersDao.set(DaoManager.createDao(connectionSource, UserEntity.class));
 
-                return new Pair<Boolean, UserEntity>(isUserExists(user.getPhoneNum(), usersDao.get()), user);
+                connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
+                        dbConfig.getUserRoot(),
+                        dbConfig.getPassword());
+                usersDao = (DaoManager.createDao(connectionSource, UserEntity.class));
+
+                return new Pair<Boolean, UserEntity>(isUserExists(user.getPhoneNum(), usersDao), user);
             } catch (SQLException e) {
                 e.printStackTrace();
                 return new Pair<Boolean, UserEntity>(false, null);
+            } finally {
+                try {
+                    usersDao.closeLastIterator();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         }).thenApplyAsync((entityPair) -> {
             if (entityPair.component1()) { // No such user with this phone number
@@ -192,11 +198,16 @@ public class Register implements OperationWorker {
         }).thenAcceptAsync((clientCommitOk) -> {
             //Commit user
             if (clientCommitOk) {
-                //TODO REFACTOR IT ?
-
                 CompletableFuture.runAsync(() -> {
+                    Dao<UserEntity, Long> usersDao = null;
+
                     try {
-                        usersDao.get().create(user);
+                        connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
+                                dbConfig.getUserRoot(),
+                                dbConfig.getPassword());
+
+                        usersDao = (DaoManager.createDao(connectionSource, UserEntity.class));
+                        usersDao.create(user);
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
@@ -218,9 +229,10 @@ public class Register implements OperationWorker {
                     e.printStackTrace();
                 }
             }
-        });
+        }).get();
 
-        return !runner.isCompletedExceptionally();
+
+        return true;
     }
 
 
