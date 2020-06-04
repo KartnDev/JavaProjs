@@ -137,18 +137,10 @@ public abstract class MobileServer implements Server{
                 Handler handler = new MobileCHandler(cFinalSocket, queue, token, dbConfig);
                 var exceptionMsg = "Exception in pool thread while handling";
                 try {
-                    handler.handleSync();
+                    handler.handleAsync();
                     logger.info("Start new handler t client");
-                }  catch (InvalidRequestException e) {
-                    e.printStackTrace();
-                    logger.info(e, exceptionMsg);
-                } catch (NoSuchFieldException e) {
-                    logger.info(e, exceptionMsg);
-                    e.printStackTrace();
-                } catch (SQLException e) {
-                    logger.info(e, exceptionMsg);
-                    e.printStackTrace();
-                } catch (IOException e) {
+                }
+                 catch (IOException e) {
                     logger.info(e, exceptionMsg);
                     e.printStackTrace();
                 }
