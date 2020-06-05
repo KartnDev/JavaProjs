@@ -92,7 +92,7 @@ public class SSLClient {
 
                 // Read the first batch of the TcpServer response bytes.
 
-                response = StreamUtils.InputStreamToStringAsync(innerSock.getInputStream()).get();  // async get
+                response = StreamUtils.InputStreamToString(innerSock.getInputStream());  // async get
 
                 logger.info("Received status: " + response);
 
@@ -104,7 +104,7 @@ public class SSLClient {
             }
 
 
-        } catch (IOException | InterruptedException | ExecutionException e) {
+        } catch (IOException e) {
             System.err.println(e);
             return new RegStat(RegStatusCode.IO_ERROR, null);
         } finally {
@@ -146,7 +146,7 @@ public class SSLClient {
             out.flush();
 
             //Listening the response from server
-            var response = StreamUtils.InputStreamToStringAsync(innerSock.getInputStream());
+            var response = StreamUtils.InputStreamToString(innerSock.getInputStream());
             System.out.println("RECEIVED: " + response);
 
 

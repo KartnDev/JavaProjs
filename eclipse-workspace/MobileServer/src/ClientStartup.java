@@ -34,11 +34,14 @@ public class ClientStartup {
         final SSLSocketFactory factory = context.getSocketFactory();
 
 
-        SSLClient client  = new SSLClient(InetAddress.getByName("127.0.0.1"), 3304, factory);
-        
-        client.randomRegisterAsync().thenAccept((resultStatus) -> {
-            System.out.println(resultStatus.getCode() + " | " + resultStatus.getUserToken());
-        }).get();
+        for (int i = 0; i < 100; i++) {
+            SSLClient client  = new SSLClient(InetAddress.getByName("127.0.0.1"), 3304, factory);
+
+            client.randomRegisterAsync().thenAccept((resultStatus) -> {
+                System.out.println(resultStatus.getCode() + " | " + resultStatus.getUserToken());
+            }).get();
+        }
+
 
 
 

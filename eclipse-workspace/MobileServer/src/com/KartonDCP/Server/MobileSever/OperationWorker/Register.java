@@ -57,7 +57,7 @@ public class Register implements OperationWorker {
 
         var serverOperationStatus = "error = 105; Error on operation";
 
-        connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
+        var connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
                 dbConfig.getUserRoot(),
                 dbConfig.getPassword());
 

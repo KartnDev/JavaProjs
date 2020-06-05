@@ -3,6 +3,7 @@ package com.KartonDCP.SDK;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public final class ReqFormatter {
 
@@ -15,6 +16,8 @@ public final class ReqFormatter {
             sb.append(value);
             sb.append("&");
         });
+        //TODO
+        args.values().stream().collect(Collectors.joining(" "));
 
         sb.deleteCharAt(sb.length() - 1);
 

@@ -24,17 +24,6 @@ public class DirReader {
     public DirReader() throws IOException, BadConfigException {
         cfg = this.readConfig();
 
-//        var assertValues = cfg.serverEndPoint.values();
-//        assertValues.addAll(cfg.mySqlServer.values());
-//        assertValues.add(cfg.appToken);
-//
-//
-//        for (var value : assertValues){
-//            if(value.isBlank() || value.isEmpty() || value.length() < 2){
-//                throw new BadConfigException("in cfg found 1 or more bad values");
-//            }
-//        }
-
     }
 
     public ServerEndPoint getEndPoint() throws BadConfigException {
@@ -128,7 +117,7 @@ public class DirReader {
         if ((new File(cfgPath)).exists()) {
             return new File(cfgPath);
         } else { // Bad path
-
+            // TODO get resource as stream
             // omit bad path in entry point location
             if (new File("config.JSON").exists()) {
                 logger.info("red file from root directory(not directory file path/entry point location)");
