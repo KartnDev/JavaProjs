@@ -1,9 +1,12 @@
 package com.KartonDCP.Server.DatabaseWorker.Models;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 //CAN BY JPA
@@ -36,6 +39,17 @@ public class UserEntity implements Serializable {
 
     @DatabaseField(canBeNull = false, unique = true)
     private String phoneNum;
+
+    @ForeignCollectionField
+    private Collection<ChatEntity> userChats;
+
+    @ForeignCollectionField
+    private Collection<DialogEntity> userDialogs;
+
+    @ForeignCollectionField
+    private Collection<UserEntity> friends;
+
+
 
     public int getId() {
         return id;
@@ -83,5 +97,29 @@ public class UserEntity implements Serializable {
 
     public void setPhoneNum(String phoneNum) {
         this.phoneNum = phoneNum;
+    }
+
+    public Collection<ChatEntity> getUserChats() {
+        return userChats;
+    }
+
+    public void setUserChats(Collection<ChatEntity> userChats) {
+        this.userChats = userChats;
+    }
+
+    public Collection<DialogEntity> getUserDialogs() {
+        return userDialogs;
+    }
+
+    public void setUserDialogs(Collection<DialogEntity> userDialogs) {
+        this.userDialogs = userDialogs;
+    }
+
+    public Collection<UserEntity> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(Collection<UserEntity> friends) {
+        this.friends = friends;
     }
 }

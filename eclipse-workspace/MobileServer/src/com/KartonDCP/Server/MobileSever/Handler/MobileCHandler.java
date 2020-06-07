@@ -3,6 +3,7 @@ package com.KartonDCP.Server.MobileSever.Handler;
 
 import com.KartonDCP.Server.DatabaseWorker.Config.DbConfig;
 import com.KartonDCP.Server.MobileSever.OperationWorker.ConnSession;
+import com.KartonDCP.Server.MobileSever.OperationWorker.CreateDialog;
 import com.KartonDCP.Server.MobileSever.OperationWorker.OperationWorker;
 import com.KartonDCP.Server.MobileSever.OperationWorker.Register;
 import com.KartonDCP.Server.MobileSever.ProtocolAndInet.ProtocolParser;
@@ -120,6 +121,9 @@ public class MobileCHandler implements Handler {
                     case ConnSession -> {
                         worker = new ConnSession(clientSocket, args, dbConfig).ApproveSessions(sessionPriorityQueue);
                         worker.executeWorkAsync();
+                    }
+                    case CreateDialog -> {
+                        worker = new CreateDialog(clientSocket, args, dbConfig);
                     }
                     case BadMethod -> logger.info("Catch the unhandled operation!");
 

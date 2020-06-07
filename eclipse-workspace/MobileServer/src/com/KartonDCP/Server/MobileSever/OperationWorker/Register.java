@@ -32,7 +32,7 @@ public class Register implements OperationWorker {
     private final String surname;
     private final String password;
     private final String phoneNum;
-    private JdbcPooledConnectionSource connectionSource = null;
+
 
 
     public Register(Socket clientSock, Map<String, String> args, DbConfig dbConfig) throws InvalidRequestException, IOException {
@@ -99,6 +99,7 @@ public class Register implements OperationWorker {
             clientSock.getOutputStream().write(serverOperationStatus.getBytes("UTF8"));
         }
 
+        connectionSource.close();
         return !endStatus;
     }
 
@@ -140,6 +141,7 @@ public class Register implements OperationWorker {
         // TODO TEST IT
         CompletableFuture.supplyAsync(() -> {
             Dao<UserEntity, Long> usersDao = null;
+            JdbcPooledConnectionSource connectionSource = null;
             try {
 
                 connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
@@ -154,8 +156,11 @@ public class Register implements OperationWorker {
             } finally {
                 try {
                     usersDao.closeLastIterator();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
+                    if (connectionSource != null) {
+                        connectionSource.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
         }).thenApplyAsync((entityPair) -> {
@@ -200,7 +205,7 @@ public class Register implements OperationWorker {
             if (clientCommitOk) {
                 CompletableFuture.runAsync(() -> {
                     Dao<UserEntity, Long> usersDao = null;
-
+                    JdbcPooledConnectionSource connectionSource = null;
                     try {
                         connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
                                 dbConfig.getUserRoot(),
@@ -208,8 +213,16 @@ public class Register implements OperationWorker {
 
                         usersDao = (DaoManager.createDao(connectionSource, UserEntity.class));
                         usersDao.create(user);
-                    } catch (SQLException throwables) {
-                        throwables.printStackTrace();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            if (connectionSource != null) {
+                                connectionSource.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }).thenRunAsync(() -> {
                     try {
