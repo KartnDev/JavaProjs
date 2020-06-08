@@ -4,6 +4,7 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.time.LocalTime;
 import java.util.UUID;
 
 
@@ -21,5 +22,7 @@ public class MessageEntity {
     @DatabaseField(canBeNull = false)
     private String messageBody;
 
+    @DatabaseField(dataType = DataType.DATE)
+    private LocalTime sendTime;
 
 }
