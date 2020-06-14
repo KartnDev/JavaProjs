@@ -27,8 +27,6 @@ public class CreateDialog implements OperationWorker {
 
     private UUID userId1, userId2;
 
-    private String argsOkStatus = "Ok";
-
 
     public CreateDialog(Socket clientSock, Map<String, String> args, DbConfig dbConfig) {
         this.clientSock = clientSock;
@@ -60,6 +58,7 @@ public class CreateDialog implements OperationWorker {
             var msg = "one of the users doesnt exists cannot apply it for " + userId1 + " | " + userId2;
             clientSock.getOutputStream().write(msg.getBytes("UTF8"));
             logger.info(msg);
+            connectionSource.close();
             return false;
         }
         var dialog = new DialogEntity(UUID.randomUUID(), userId1, userId2);
@@ -80,7 +79,8 @@ public class CreateDialog implements OperationWorker {
                         dialog.getDialogUUID(), userId1, userId2);
                 logger.info("Success ");
                 clientSock.getOutputStream().write(msg.getBytes("UTF8"));
-
+                connectionSource.close();
+                return true;
 
             } else {
                 // Rollback statement
@@ -88,7 +88,7 @@ public class CreateDialog implements OperationWorker {
                 dialogEntitiesDao.delete(dialog);
             }
         }
-        connectionSource.close();
+        return false;
     }
 
     @Override
