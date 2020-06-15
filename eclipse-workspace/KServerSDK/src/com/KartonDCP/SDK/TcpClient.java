@@ -3,6 +3,7 @@ package com.KartonDCP.SDK;
 import com.KartonDCP.SDK.Status.DialogRegResult;
 import com.KartonDCP.SDK.Status.RegStat;
 import com.KartonDCP.SDK.Status.RegStatusCode;
+import com.KartonDCP.SDK.Status.SendStatus;
 import com.KartonDCP.Utils.Random.RandomWork;
 import com.KartonDCP.Utils.Streams.StreamUtils;
 
@@ -153,9 +154,8 @@ public class TcpClient {
     }
 
     public DialogRegResult createDialog(UUID selfToken, UUID otherUser){
+        String request = appToken + String.format("?reg_dialog?userId1=%s&userId2=%s", selfToken, otherUser);
         try {
-            String request = appToken + String.format("?reg_dialog?userId1=%s&userId2=%s", selfToken, otherUser);
-
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
             logger.info("SEND REQUEST: " + request);
             out.println(request);
@@ -182,7 +182,31 @@ public class TcpClient {
         return new DialogRegResult(RegStatusCode.TIMEOUT_ERROR, null);
     }
 
+    public SendStatus sendMessage(String message, UUID userSender, UUID dialog){
+        String request = appToken + String.format("?send_message_dialog?msg=%s&dialog_uuid=%s&user_sender=%s",
+                message, dialog.toString(), userSender.toString());
+        try {
+            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
+            logger.info("SEND REQUEST: " + request);
+            out.println(request);
+            out.flush();
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+        try {
+            String response = StreamUtils.InputStreamToString(innerSock.getInputStream());
+            System.out.println(response);
+            if (response.contains("Success")) {
+                return SendStatus.SEND;
+            } else {
+                return SendStatus.CLIENT_ERROR;
+            }
 
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+        return SendStatus.CANCELED;
+    }
 
 
 

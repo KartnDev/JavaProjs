@@ -4,6 +4,7 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.sql.Date;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -11,7 +12,13 @@ import java.util.UUID;
 @DatabaseTable(tableName = "messages")
 public class MessageEntity {
 
-    public MessageEntity(DialogEntity dialogEntity, UUID from, UUID to, String messageBody, LocalTime sendTime){
+
+
+    public MessageEntity(){
+
+    }
+
+    public MessageEntity(DialogEntity dialogEntity, UUID from, UUID to, String messageBody, Date sendTime){
 
         this.dialogEntity = dialogEntity;
         this.from = from;
@@ -38,7 +45,7 @@ public class MessageEntity {
     private String messageBody;
 
     @DatabaseField(dataType = DataType.DATE)
-    private LocalTime sendTime;
+    private Date sendTime;
 
 
     public DialogEntity getDialogEntity() {
@@ -81,11 +88,11 @@ public class MessageEntity {
         this.messageBody = messageBody;
     }
 
-    public LocalTime getSendTime() {
+    public Date getSendTime() {
         return sendTime;
     }
 
-    public void setSendTime(LocalTime sendTime) {
+    public void setSendTime(Date sendTime) {
         this.sendTime = sendTime;
     }
 }

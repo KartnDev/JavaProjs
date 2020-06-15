@@ -122,7 +122,7 @@ public class MobileCHandler implements Handler {
                         worker.executeWorkSync();
                     }
                     case SendMessage -> {
-                        worker = new SendMessage();
+                        worker = new SendMessage(clientSocket, args, dbConfig);
                         worker.executeWorkSync();
                     }
                     case BadMethod -> logger.info("Catch the unhandled operation!");

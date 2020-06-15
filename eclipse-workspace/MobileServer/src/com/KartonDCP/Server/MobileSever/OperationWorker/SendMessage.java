@@ -12,8 +12,11 @@ import com.j256.ormlite.logger.LoggerFactory;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.Date;
 import java.sql.SQLException;
-import java.time.LocalTime;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -54,21 +57,30 @@ public class SendMessage implements OperationWorker{
                 dbConfig.getUserRoot(),
                 dbConfig.getPassword());
 
-        Dao<DialogEntity, Long> dialogEntities = DaoManager.createDao(connectionSource, DialogEntity.class);
+        Dao<DialogEntity, Long> dialogDao = DaoManager.createDao(connectionSource, DialogEntity.class);
+        Dao<MessageEntity, Long> messageDao = DaoManager.createDao(connectionSource, MessageEntity.class);
 
-        var query = dialogEntities.queryBuilder().where().eq("dialogUUID", dialogUUID).query();
+        var query = dialogDao.queryBuilder().where().eq("dialogUUID", dialogUUID).query();
         if (query.size() == 1) {
             var dialog = query.get(0);
-
             var userReceiver = dialog.getUser1Self() == userSender ? dialog.getUser1Self() : dialog.getUser2();
+            var messageNew = new MessageEntity(dialog, userSender, userReceiver, message, Date.valueOf(LocalDate.now()));
 
-            dialog.getMessages().add(new MessageEntity(dialog, userSender, userReceiver, message, LocalTime.now()));
-            // update dialog
-            dialogEntities.update(dialog);
+            dialog.setMessages(new LinkedList<>());
+            dialog.getMessages().add(messageNew);
+            // update dialog and add message
+            dialogDao.update(dialog);
+            messageDao.create(messageNew);
 
             clientSock.getOutputStream().write("Success send!".getBytes("UTF8"));
+            return true;
+        } else {
+            clientSock.getOutputStream().write("Client Error: canceled".getBytes("UTF8"));
+            clientSock.close();
+            //TODO bad
         }
 
+        return false;
     }
 
     @Override
