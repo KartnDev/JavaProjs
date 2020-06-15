@@ -10,6 +10,10 @@ import java.util.UUID;
 
 @DatabaseTable(tableName = "messages")
 public class MessageEntity {
+
+    @DatabaseField(foreign=true)
+    private DialogEntity dialogEntity;
+
     @DatabaseField(generatedId = true)
     private int id;
 

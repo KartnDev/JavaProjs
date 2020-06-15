@@ -8,8 +8,8 @@ import com.KartonDCP.Server.MobileSever.OperationWorker.OperationWorker;
 import com.KartonDCP.Server.MobileSever.OperationWorker.Register;
 import com.KartonDCP.Server.MobileSever.ProtocolAndInet.ProtocolParser;
 import com.KartonDCP.Server.MobileSever.Session.SessionSetup;
-import com.KartonDCP.Utils.Exceptions.InvalidRequestException;
-import com.KartonDCP.Utils.Streams.StreamUtils;
+import com.KartonDCP.Server.Utils.Exceptions.InvalidRequestException;
+import com.KartonDCP.Server.Utils.Streams.StreamUtils;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 import kotlin.Pair;
@@ -21,7 +21,6 @@ import java.time.LocalTime;
 import java.util.PriorityQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public class MobileCHandler implements Handler {
 
@@ -116,7 +115,7 @@ public class MobileCHandler implements Handler {
                 switch (method) {
                     case Register -> {
                         worker = new Register(clientSocket, args, dbConfig);
-                        worker.executeWorkAsync();
+                        worker.executeWorkSync();
                     }
                     case ConnSession -> {
                         worker = new ConnSession(clientSocket, args, dbConfig).ApproveSessions(sessionPriorityQueue);

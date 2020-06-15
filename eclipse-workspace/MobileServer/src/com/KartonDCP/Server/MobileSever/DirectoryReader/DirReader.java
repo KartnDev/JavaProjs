@@ -3,7 +3,7 @@ package com.KartonDCP.Server.MobileSever.DirectoryReader;
 import com.KartonDCP.Server.Configurations.ConfigModel;
 import com.KartonDCP.Server.DatabaseWorker.Config.DbConfig;
 import com.KartonDCP.Server.MobileSever.TcpMobileServer;
-import com.KartonDCP.Utils.Exceptions.BadConfigException;
+import com.KartonDCP.Server.Utils.Exceptions.BadConfigException;
 import com.KartonDCP.Server.MobileSever.ProtocolAndInet.ServerEndPoint;
 import com.google.gson.Gson;
 import com.j256.ormlite.logger.Logger;

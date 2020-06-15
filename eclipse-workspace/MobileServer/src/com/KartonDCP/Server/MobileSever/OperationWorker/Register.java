@@ -2,8 +2,8 @@ package com.KartonDCP.Server.MobileSever.OperationWorker;
 
 import com.KartonDCP.Server.DatabaseWorker.Config.DbConfig;
 import com.KartonDCP.Server.DatabaseWorker.Models.UserEntity;
-import com.KartonDCP.Utils.Exceptions.InvalidRequestException;
-import com.KartonDCP.Utils.Streams.StreamUtils;
+import com.KartonDCP.Server.Utils.Exceptions.InvalidRequestException;
+import com.KartonDCP.Server.Utils.Streams.StreamUtils;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
@@ -147,9 +147,9 @@ public class Register implements OperationWorker {
                 connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
                         dbConfig.getUserRoot(),
                         dbConfig.getPassword());
-                usersDao = (DaoManager.createDao(connectionSource, UserEntity.class));
+                usersDao = DaoManager.createDao(connectionSource, UserEntity.class);
 
-                return new Pair<Boolean, UserEntity>(isUserExists(user.getPhoneNum(), usersDao), user);
+                return new Pair<>(isUserExists(user.getPhoneNum(), usersDao), user);
             } catch (SQLException e) {
                 e.printStackTrace();
                 return new Pair<Boolean, UserEntity>(false, null);

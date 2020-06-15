@@ -26,13 +26,13 @@ public final class RandomWork {
     }
 
     public static final Map<String, String> createRandUserArgs(){
-        var args = new HashMap<String, String>();
+        Map args = new HashMap<String, String>();
 
         args.put("name", getRandWord(6));
         args.put("surname", getRandWord(10));
         args.put("password", getRandWord(5) + (new Random()).nextInt(100));
 
-        var rand = new Random();
+        Random rand = new Random();
         args.put("phone_num", "8" + rand.nextInt(999999999) + rand.nextInt(10));
 
         return args;

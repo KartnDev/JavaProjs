@@ -2,15 +2,15 @@ package com.KartonDCP.Server.MobileSever;
 
 import com.KartonDCP.Server.DatabaseWorker.Config.DbConfig;
 import com.KartonDCP.Server.DatabaseWorker.Mapper.EntityMapper;
+import com.KartonDCP.Server.DatabaseWorker.Models.DialogEntity;
+import com.KartonDCP.Server.DatabaseWorker.Models.MessageEntity;
 import com.KartonDCP.Server.DatabaseWorker.Models.UserEntity;
 import com.KartonDCP.Server.MobileSever.DirectoryReader.DirReader;
 import com.KartonDCP.Server.MobileSever.Handler.Handler;
 import com.KartonDCP.Server.MobileSever.Handler.MobileCHandler;
-import com.KartonDCP.Server.MobileSever.OperationWorker.ConnSession;
 import com.KartonDCP.Server.MobileSever.Session.SessionSetup;
-import com.KartonDCP.Utils.Exceptions.BadConfigException;
+import com.KartonDCP.Server.Utils.Exceptions.BadConfigException;
 import com.KartonDCP.Server.MobileSever.ProtocolAndInet.ServerEndPoint;
-import com.KartonDCP.Utils.Exceptions.InvalidRequestException;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 import kotlin.Pair;
@@ -64,8 +64,9 @@ public abstract class MobileServer implements Server{
         queue = new PriorityQueue<>();
 
         em.addToMap(UserEntity.class);
+        em.addToMap(DialogEntity.class);
+        em.addToMap(MessageEntity.class);
         em.mapEntitiesIfNotExist();
-
     }
 
     public boolean kill(){

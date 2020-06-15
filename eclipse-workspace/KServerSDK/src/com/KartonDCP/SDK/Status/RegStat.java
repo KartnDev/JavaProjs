@@ -1,6 +1,5 @@
 package com.KartonDCP.SDK.Status;
 
-import com.sun.istack.Nullable;
 
 import java.util.UUID;
 
@@ -8,7 +7,7 @@ public class RegStat {
     private final RegStatusCode code;
     private final UUID userToken;
 
-    public RegStat(RegStatusCode code,@Nullable UUID userToken){
+    public RegStat(RegStatusCode code, UUID userToken){
 
         this.code = code;
         this.userToken = userToken;

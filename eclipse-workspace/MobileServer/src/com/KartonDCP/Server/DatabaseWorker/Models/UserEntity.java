@@ -40,14 +40,9 @@ public class UserEntity implements Serializable {
     @DatabaseField(canBeNull = false, unique = true)
     private String phoneNum;
 
-    @ForeignCollectionField
-    private Collection<ChatEntity> userChats;
 
-    @ForeignCollectionField
     private Collection<DialogEntity> userDialogs;
 
-    @ForeignCollectionField
-    private Collection<UserEntity> friends;
 
 
 
@@ -99,13 +94,6 @@ public class UserEntity implements Serializable {
         this.phoneNum = phoneNum;
     }
 
-    public Collection<ChatEntity> getUserChats() {
-        return userChats;
-    }
-
-    public void setUserChats(Collection<ChatEntity> userChats) {
-        this.userChats = userChats;
-    }
 
     public Collection<DialogEntity> getUserDialogs() {
         return userDialogs;
@@ -115,11 +103,4 @@ public class UserEntity implements Serializable {
         this.userDialogs = userDialogs;
     }
 
-    public Collection<UserEntity> getFriends() {
-        return friends;
-    }
-
-    public void setFriends(Collection<UserEntity> friends) {
-        this.friends = friends;
-    }
 }

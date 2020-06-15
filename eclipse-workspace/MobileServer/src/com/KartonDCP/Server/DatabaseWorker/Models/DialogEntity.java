@@ -9,12 +9,18 @@ import java.util.UUID;
 
 public class DialogEntity {
 
+    public DialogEntity(){
+
+    }
+
     public DialogEntity(UUID dialogUUID, UUID user1, UUID user2) {
         this.dialogUUID = dialogUUID;
-        this.user1 = user1;
+        this.user1Self = user1;
         this.user2 = user2;
     }
 
+    @DatabaseField(foreign=true)
+    private UserEntity byUser;
 
     @DatabaseField(generatedId = true, unique = true)
     private int id;
@@ -23,14 +29,11 @@ public class DialogEntity {
     private UUID dialogUUID;
 
     @DatabaseField(canBeNull = false, unique = true, dataType = DataType.UUID)
-    private UUID user1;
+    private UUID user1Self;
 
     @DatabaseField(canBeNull = false, unique = true, dataType = DataType.UUID)
     private UUID user2;
 
-
-    @ForeignCollectionField
-    @DatabaseField(canBeNull = true)
     private Collection<MessageEntity> messages;
 
 
@@ -50,12 +53,12 @@ public class DialogEntity {
         this.dialogUUID = dialogUUID;
     }
 
-    public UUID getUser1() {
-        return user1;
+    public UUID getUser1Self() {
+        return user1Self;
     }
 
-    public void setUser1(UUID user1) {
-        this.user1 = user1;
+    public void setUser1Self(UUID user1Self) {
+        this.user1Self = user1Self;
     }
 
     public UUID getUser2() {

@@ -1,17 +1,8 @@
 package com.KartonDCP.Server.MobileSever;
 
-import com.KartonDCP.Server.MobileSever.Handler.Handler;
-import com.KartonDCP.Server.MobileSever.Handler.MobileCHandler;
-import com.KartonDCP.Utils.Exceptions.InvalidRequestException;
-
 import javax.net.ssl.*;
 import java.io.File;
-import java.io.IOException;
-import java.net.Socket;
 import java.security.*;
-import java.sql.SQLException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class SSLMobileServer extends MobileServer implements Server {
 
