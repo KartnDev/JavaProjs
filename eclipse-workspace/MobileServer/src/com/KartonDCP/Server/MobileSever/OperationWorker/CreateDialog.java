@@ -52,8 +52,8 @@ public class CreateDialog implements OperationWorker {
 
         DialogEntity onCreationDialog = new DialogEntity(UUID.randomUUID(), userId1, userId2);
         if (existingUser()) {
-            userId1 = UUID.fromString(args.get("userId1")); // friend id
-            userId2 = UUID.fromString(args.get("userId2")); // my id
+            userId1 = UUID.fromString(args.get("userid1")); // friend id
+            userId2 = UUID.fromString(args.get("userid2")); // my id
         } else {
             var msg = "one of the users doesnt exists cannot apply it for " + userId1 + " | " + userId2;
             clientSock.getOutputStream().write(msg.getBytes("UTF8"));
@@ -75,7 +75,7 @@ public class CreateDialog implements OperationWorker {
             if (statusFirstInsertion && statusSecondInsertion) {
                 // Fine
 
-                var msg = String.format("Success created new dialog UUID(%s) between user1 %s and user2 %s",
+                var msg = String.format("Success created new dialog UUID=%s between user1 %s and user2 %s",
                         dialog.getDialogUUID(), userId1, userId2);
                 logger.info("Success ");
                 clientSock.getOutputStream().write(msg.getBytes("UTF8"));
@@ -84,7 +84,9 @@ public class CreateDialog implements OperationWorker {
 
             } else {
                 // Rollback statement
-                logger.info("Bad users: " + userId1 + " | " + userId2);
+                var errorMsg = "Bad users: "+userId1+" | "+userId2;
+                clientSock.getOutputStream().write(errorMsg.getBytes("UTF8"));
+                logger.info(errorMsg);
                 dialogEntitiesDao.delete(dialog);
             }
         }

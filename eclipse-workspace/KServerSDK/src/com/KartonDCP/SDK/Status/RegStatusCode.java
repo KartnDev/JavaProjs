@@ -5,5 +5,6 @@ public enum RegStatusCode {
     USER_EXISTS,
     IO_ERROR,
     SERVER_ERROR,
-    TIMEOUT_ERROR
+    TIMEOUT_ERROR,
+
 }

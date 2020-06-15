@@ -104,7 +104,6 @@ public class MobileCHandler implements Handler {
             try {
                 requestParser = new ProtocolParser(result, token);
 
-
                 var method = requestParser.getMethodName();
                 var args = requestParser.getArgs();
 
@@ -115,7 +114,7 @@ public class MobileCHandler implements Handler {
                 switch (method) {
                     case Register -> {
                         worker = new Register(clientSocket, args, dbConfig);
-                        worker.executeWorkSync();
+                        worker.executeWorkAsync();
                     }
                     case ConnSession -> {
                         worker = new ConnSession(clientSocket, args, dbConfig).ApproveSessions(sessionPriorityQueue);
@@ -123,6 +122,7 @@ public class MobileCHandler implements Handler {
                     }
                     case CreateDialog -> {
                         worker = new CreateDialog(clientSocket, args, dbConfig);
+                        worker.executeWorkSync();
                     }
                     case BadMethod -> logger.info("Catch the unhandled operation!");
 

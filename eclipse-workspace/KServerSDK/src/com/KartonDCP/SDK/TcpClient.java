@@ -1,5 +1,6 @@
 package com.KartonDCP.SDK;
 
+import com.KartonDCP.SDK.Status.DialogRegResult;
 import com.KartonDCP.SDK.Status.RegStat;
 import com.KartonDCP.SDK.Status.RegStatusCode;
 import com.KartonDCP.Utils.Random.RandomWork;
@@ -25,13 +26,11 @@ public class TcpClient {
     private static final Logger logger = Logger.getGlobal();
     private Socket innerSock;
 
-    public TcpClient(InetAddress endPoint, int port, SocketFactory factory) {
+    public TcpClient(InetAddress endPoint, int port) {
         try {
-            innerSock = factory.createSocket(endPoint, port);
+            innerSock = new Socket(endPoint, port);
         } catch (IOException e) {
-            System.err.println(e);
-        } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -152,6 +151,40 @@ public class TcpClient {
             e.printStackTrace();
         }
     }
+
+    public DialogRegResult createDialog(UUID selfToken, UUID otherUser){
+        try {
+            String request = appToken + String.format("?reg_dialog?userId1=%s&userId2=%s", selfToken, otherUser);
+
+            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
+            logger.info("SEND REQUEST: " + request);
+            out.println(request);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            String response = StreamUtils.InputStreamToString(innerSock.getInputStream());
+            System.out.println(response);
+            if(response.contains("Success")){
+                UUID dialogId = UUID.fromString(response.split("UUID=")[0].split(" between")[0]);
+                return new DialogRegResult(RegStatusCode.OK, dialogId);
+            } else {
+                return new DialogRegResult(RegStatusCode.SERVER_ERROR, null);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            new DialogRegResult(RegStatusCode.IO_ERROR, null);
+        }
+
+        return new DialogRegResult(RegStatusCode.TIMEOUT_ERROR, null);
+    }
+
+
+
+
 
 
 }
