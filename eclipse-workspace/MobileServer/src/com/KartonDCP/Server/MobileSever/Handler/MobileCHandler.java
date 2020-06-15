@@ -2,10 +2,7 @@ package com.KartonDCP.Server.MobileSever.Handler;
 
 
 import com.KartonDCP.Server.DatabaseWorker.Config.DbConfig;
-import com.KartonDCP.Server.MobileSever.OperationWorker.ConnSession;
-import com.KartonDCP.Server.MobileSever.OperationWorker.CreateDialog;
-import com.KartonDCP.Server.MobileSever.OperationWorker.OperationWorker;
-import com.KartonDCP.Server.MobileSever.OperationWorker.Register;
+import com.KartonDCP.Server.MobileSever.OperationWorker.*;
 import com.KartonDCP.Server.MobileSever.ProtocolAndInet.ProtocolParser;
 import com.KartonDCP.Server.MobileSever.Session.SessionSetup;
 import com.KartonDCP.Server.Utils.Exceptions.InvalidRequestException;
@@ -97,7 +94,7 @@ public class MobileCHandler implements Handler {
         var result = requestResult;
 
 
-        var s = CompletableFuture.runAsync(() -> {
+        var voidCompletableFuture = CompletableFuture.runAsync(() -> {
 
 
             ProtocolParser requestParser = null;
@@ -124,6 +121,10 @@ public class MobileCHandler implements Handler {
                         worker = new CreateDialog(clientSocket, args, dbConfig);
                         worker.executeWorkSync();
                     }
+                    case SendMessage -> {
+                        worker = new SendMessage();
+                        worker.executeWorkSync();
+                    }
                     case BadMethod -> logger.info("Catch the unhandled operation!");
 
                 }
@@ -137,9 +138,9 @@ public class MobileCHandler implements Handler {
 
         });
 
-        s.get();
+        voidCompletableFuture.get();
 
-        return !s.isCompletedExceptionally();
+        return !voidCompletableFuture.isCompletedExceptionally();
     }
 
     @Override

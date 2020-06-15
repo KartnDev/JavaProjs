@@ -28,6 +28,7 @@ public class Register implements OperationWorker {
     private final Socket clientSock;
     private final DbConfig dbConfig;
     private final Logger logger = LoggerFactory.getLogger(Register.class);
+
     private final String name;
     private final String surname;
     private final String password;

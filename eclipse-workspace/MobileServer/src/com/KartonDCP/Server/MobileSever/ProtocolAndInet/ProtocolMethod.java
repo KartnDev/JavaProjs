@@ -4,5 +4,6 @@ public enum  ProtocolMethod {
     Register,
     BadMethod,
     ConnSession,
-    CreateDialog
+    CreateDialog,
+    SendMessage
 }

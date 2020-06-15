@@ -68,7 +68,6 @@ public class CreateDialog implements OperationWorker {
             dialogEntitiesDao.create(dialog);
             Dao<UserEntity, Long> usersDao = DaoManager.createDao(connectionSource, UserEntity.class);
 
-
             var statusFirstInsertion = addDialogToUser(userId1, dialog, usersDao);
             var statusSecondInsertion = addDialogToUser(userId1, dialog, usersDao);
 
