@@ -10,6 +10,6 @@ import java.util.concurrent.ExecutionException;
 public interface Handler {
     boolean handleSync() throws IOException, InvalidRequestException, NoSuchFieldException, SQLException;
     boolean handleAsync() throws IOException, ExecutionException, InterruptedException;
-    boolean cancel();
-    void candleCurrentAndStop();
+    boolean cancel() throws IOException;
+    void handleCurrentAndStop() throws IOException;
 }

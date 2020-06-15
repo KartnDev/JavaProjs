@@ -19,6 +19,8 @@ import java.util.PriorityQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import static com.KartonDCP.Server.MobileSever.ProtocolAndInet.ProtocolMethod.BadMethod;
+
 public class MobileCHandler implements Handler {
 
     private final Socket clientSocket;
@@ -45,7 +47,6 @@ public class MobileCHandler implements Handler {
 
         requestParser = new ProtocolParser(request, token);
 
-
         var method = requestParser.getMethodName();
         var args = requestParser.getArgs();
 
@@ -53,37 +54,45 @@ public class MobileCHandler implements Handler {
 
         handleTheSession();
 
+        logger.info("Start handle new client this addr: " + clientSocket.getInetAddress().toString());
+
         switch (method) {
             case Register -> {
                 worker = new Register(clientSocket, args, dbConfig);
-                return worker.executeWorkSync();
+                worker.executeWorkSync();
             }
             case ConnSession -> {
                 worker = new ConnSession(clientSocket, args, dbConfig).ApproveSessions(sessionPriorityQueue);
-                return worker.executeWorkSync();
+                worker.executeWorkSync();
+            }
+            case CreateDialog -> {
+                worker = new CreateDialog(clientSocket, args, dbConfig);
+                worker.executeWorkSync();
+            }
+            case SendMessage -> {
+                worker = new SendMessage(clientSocket, args, dbConfig);
+                worker.executeWorkSync();
             }
             case BadMethod -> {
-                return false;
+                logger.info("Catch the unhandled operation!");
+                clientSocket.getOutputStream().write("Unknown method".getBytes("UTF-8"));
             }
-
         }
 
-
-        return false; // NEVER DOES IT AND NEVER GOES HERE...
+        return false;
     }
 
 
     public void handleTheSession() {
         var now = LocalTime.now();
         if (!sessionPriorityQueue.isEmpty()) {
-
             if (now.isAfter(sessionPriorityQueue.peek().component2())) {
                 sessionPriorityQueue.removeIf((Pair<SessionSetup, LocalTime> item) -> now.isAfter(item.component2()));
             }
         }
     }
 
-
+    private CompletableFuture asyncTaskRunner = null;
 
     @Override
     public boolean handleAsync() throws IOException, ExecutionException, InterruptedException {
@@ -94,7 +103,7 @@ public class MobileCHandler implements Handler {
         var result = requestResult;
 
 
-        var voidCompletableFuture = CompletableFuture.runAsync(() -> {
+        asyncTaskRunner = CompletableFuture.runAsync(() -> {
 
 
             ProtocolParser requestParser = null;
@@ -119,37 +128,56 @@ public class MobileCHandler implements Handler {
                     }
                     case CreateDialog -> {
                         worker = new CreateDialog(clientSocket, args, dbConfig);
-                        worker.executeWorkSync();
+                        worker.executeWorkAsync();
                     }
                     case SendMessage -> {
                         worker = new SendMessage(clientSocket, args, dbConfig);
-                        worker.executeWorkSync();
+                        worker.executeWorkAsync();
                     }
                     case BadMethod -> logger.info("Catch the unhandled operation!");
 
                 }
             } catch (InvalidRequestException e) {
                 logger.error(e, "Was invalid operation in handler!");
+                // TODO SEND CLIENT ERROR WITHOUT NEW TRY/CATCH
                 e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
+                // TODO SAME
                 logger.error(e, "UNHANDLED ERROR!");
             }
 
         });
 
-        voidCompletableFuture.get();
 
-        return !voidCompletableFuture.isCompletedExceptionally();
+        asyncTaskRunner.get();
+
+        return !asyncTaskRunner.isCompletedExceptionally();
     }
 
     @Override
-    public boolean cancel() {
-        return false; // TODO
+    public boolean cancel() throws IOException {
+        if(asyncTaskRunner != null){
+            asyncTaskRunner.cancel(false);
+            asyncTaskRunner.whenComplete((res, err) ->{ // JS AGAIN
+                logger.info("Handler Task Cancelled, Result: " + res + "and error: " + err);
+
+            });
+            clientSocket.close();
+            return true;
+        }
+        return false; // there was sync statement
     }
 
     @Override
-    public void candleCurrentAndStop() {
-        // TODO
+    public void handleCurrentAndStop() throws IOException {
+        if(asyncTaskRunner != null){
+            asyncTaskRunner.cancel(true);
+            asyncTaskRunner.whenComplete((res, err) ->{ // JS AGAIN
+                logger.info("Handler Task Cancelled, Result: " + res + "and error: " + err);
+
+            });
+            clientSocket.close();
+        }
     }
 }
