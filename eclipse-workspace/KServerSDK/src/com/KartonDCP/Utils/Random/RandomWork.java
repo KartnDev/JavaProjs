@@ -3,9 +3,13 @@ package com.KartonDCP.Utils.Random;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collectors;
+import java.util.UUID;
+
+import static com.KartonDCP.SDK.ReqFormatter.formatTheRequest;
 
 public final class RandomWork {
+
+
 
 
     public static final String getRandWord(int targetStringLength) {
@@ -22,7 +26,7 @@ public final class RandomWork {
     }
 
     public static final Map<String, String> createRandUserArgs(){
-        Map args = new HashMap<String, String>();
+        var args = new HashMap<String, String>();
 
         args.put("name", getRandWord(6));
         args.put("surname", getRandWord(10));
@@ -39,21 +43,6 @@ public final class RandomWork {
         return formatTheRequest("register", createRandUserArgs(), token);
     }
 
-    public static String formatTheRequest(String methodName, Map<String, String> args, String appToken) {
-        StringBuffer sb = new StringBuffer();
 
-        args.forEach((key, value) -> { // я че в джаваскрипт попал???
-            sb.append(key);
-            sb.append("=");
-            sb.append(value);
-            sb.append("&");
-        });
-        //TODO
-        args.values().stream().collect(Collectors.joining(" "));
-
-        sb.deleteCharAt(sb.length() - 1);
-
-        return String.format("%s?%s?%s", appToken, methodName, sb.toString());
-    }
 
 }

@@ -26,7 +26,7 @@ public final class ReqFormatter {
 
 
     public static String formatRegister(String name, String surname, String password, String phone_num, String token) {
-        var args = new HashMap<String, String>();
+        Map args = new HashMap<String, String>();
         args.put("name", name);
         args.put("surname", surname);
         args.put("password", password);

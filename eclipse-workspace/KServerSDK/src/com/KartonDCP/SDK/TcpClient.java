@@ -9,6 +9,7 @@ import javax.net.SocketFactory;
 import javax.net.ssl.*;
 import java.io.*;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.security.KeyStore;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -16,36 +17,34 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
-public class SSLClient {
+public class TcpClient {
 
     @SuppressWarnings("SpellCheckingInspection")
     public static final String appToken = "98F1EJJDa4fjwD2fUIHWUd2dsaAsS289IFFFadde3A8213HFI7";
-    private static final String[] protocols = new String[]{"TLSv1.3"};
-    private static final String[] cipher_suites = new String[]{"TLS_AES_128_GCM_SHA256"};
-    private static final Logger logger = Logger.getGlobal();
-    private SSLSocket innerSock;
 
-    public SSLClient(InetAddress endPoint, int port, SocketFactory factory) {
+    private static final Logger logger = Logger.getGlobal();
+    private Socket innerSock;
+
+    public TcpClient(InetAddress endPoint, int port, SocketFactory factory) {
         try {
-            innerSock = (SSLSocket) factory.createSocket(endPoint, port);
+            innerSock = factory.createSocket(endPoint, port);
         } catch (IOException e) {
             System.err.println(e);
         } catch (Exception e) {
 
         }
-        innerSock.setEnabledProtocols(protocols);
-        innerSock.setEnabledCipherSuites(cipher_suites);
     }
 
-    public SSLClient(InetAddress endPoint, int port, File trustKey) {
+
+    @Deprecated
+    public TcpClient(InetAddress endPoint, int port, File trustKey) {
         try {
             final char[] password = "passphrase".toCharArray();
 
             System.out.println(trustKey.exists() ? "TrustKey found !" : "No Trust key!");
 
-            final KeyStore keyStore = KeyStore.getInstance(trustKey, password);
-
             final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            KeyStore keyStore = null;
             trustManagerFactory.init(keyStore);
 
             final KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("NewSunX509");
@@ -62,15 +61,15 @@ public class SSLClient {
         } catch (Exception e) {
             System.err.println(e);
         }
-        innerSock.setEnabledProtocols(protocols);
-        innerSock.setEnabledCipherSuites(cipher_suites);
+        //innerSock.setEnabledProtocols(protocols);
+        //innerSock.setEnabledCipherSuites(cipher_suites);
     }
 
 
     public RegStat registerFromStr(String request) {
         try {
-            innerSock.startHandshake();
-            var out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
+
+            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
 
             // Send request to register the random user
             logger.info("SEND REQUEST: " + request);
@@ -78,10 +77,10 @@ public class SSLClient {
             out.flush();
 
             //Listening the response from server
-            var response = StreamUtils.InputStreamToString(innerSock.getInputStream()); // async get
+            String response = StreamUtils.InputStreamToString(innerSock.getInputStream()); // async get
             logger.info("RECEIVED: " + response);
 
-            var token = UUID.fromString(response.split("user_token=")[1].split("&")[0]);
+            UUID token = UUID.fromString(response.split("user_token=")[1].split("&")[0]);
 
             if (!response.contains("error=100")) {
                 String uuid = response.split("UUID=")[1].split("\\s+")[0];
@@ -135,18 +134,17 @@ public class SSLClient {
 
     public void getSession() {
         try {
-            innerSock.startHandshake();
 
-            var out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
+            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
 
             // Send request to register the random user
-            var request = ReqFormatter.formatTheRequest("reg_session", null, appToken);
+            String request = ReqFormatter.formatTheRequest("reg_session", null, appToken);
             System.out.println("SEND REQUEST: " + request);
             out.println(request);
             out.flush();
 
             //Listening the response from server
-            var response = StreamUtils.InputStreamToString(innerSock.getInputStream());
+            String response = StreamUtils.InputStreamToString(innerSock.getInputStream());
             System.out.println("RECEIVED: " + response);
 
 
