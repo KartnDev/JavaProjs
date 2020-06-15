@@ -101,7 +101,7 @@ public class CreateDialog implements OperationWorker {
 
     private boolean addDialogToUser(UUID userId, DialogEntity dialog, Dao<UserEntity, Long> dao) throws SQLException {
 
-        var query = dao.queryBuilder().where().eq("userToken", userId).query();
+        var query = dao.queryBuilder().where().eq("user_token", userId).query();
 
         if (query.size() == 1) {
             var user = query.get(0);
@@ -130,7 +130,7 @@ public class CreateDialog implements OperationWorker {
     }
 
     private boolean existsDialogBetweenTwoUsers() {
-        return true;
+        return false;
     }
 
 
