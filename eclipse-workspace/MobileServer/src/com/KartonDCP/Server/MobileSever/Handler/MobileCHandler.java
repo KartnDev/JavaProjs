@@ -37,6 +37,7 @@ public class MobileCHandler implements Handler {
         this.dbConfig = dbConfig;
     }
 
+
     @Override
     public boolean handleSync() throws IOException, InvalidRequestException, NoSuchFieldException, SQLException {
         var inputStream = clientSocket.getInputStream();
@@ -124,15 +125,15 @@ public class MobileCHandler implements Handler {
                     }
                     case ConnSession -> {
                         worker = new ConnSession(clientSocket, args, dbConfig).ApproveSessions(sessionPriorityQueue);
-                        worker.executeWorkAsync();
+                        worker.executeWorkSync(); // TODO Async
                     }
                     case CreateDialog -> {
                         worker = new CreateDialog(clientSocket, args, dbConfig);
-                        worker.executeWorkAsync();
+                        worker.executeWorkSync(); // TODO Async
                     }
                     case SendMessage -> {
                         worker = new SendMessage(clientSocket, args, dbConfig);
-                        worker.executeWorkAsync();
+                        worker.executeWorkSync(); // TODO Async
                     }
                     case BadMethod -> logger.info("Catch the unhandled operation!");
 

@@ -5,5 +5,6 @@ public enum  ProtocolMethod {
     BadMethod,
     ConnSession,
     CreateDialog,
-    SendMessage
+    SendMessage,
+    GetUserDialogs
 }
