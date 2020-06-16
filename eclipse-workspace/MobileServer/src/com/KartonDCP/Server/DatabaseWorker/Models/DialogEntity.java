@@ -4,10 +4,12 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.UUID;
 
-public class DialogEntity {
+
+public class DialogEntity implements Serializable {
 
     public DialogEntity(){
 
@@ -18,6 +20,8 @@ public class DialogEntity {
         this.user1Self = user1;
         this.user2 = user2;
     }
+
+    private static final long serialVersionUID = 1L;
 
     @DatabaseField(foreign=true)
     private UserEntity byUser;

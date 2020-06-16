@@ -8,10 +8,11 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 public class GetDialogsByUser extends BaseWorkerAsync implements  OperationWorker {
@@ -36,15 +37,19 @@ public class GetDialogsByUser extends BaseWorkerAsync implements  OperationWorke
             var query = dialogEntitiesDao.queryBuilder().where().eq("user_token", userToken).query();
             // TODO or double query in dialogs
             if(query.size() == 1){
-                var dialogs = query.get(0).getUserDialogs();
+                Collection<DialogEntity> dialogs = query.get(0).getUserDialogs();
+
+                var list = new ArrayList<DialogEntity>(dialogs);
+                ObjectOutputStream stream = new ObjectOutputStream(clientSock.getOutputStream());
+
+                stream.writeObject(dialogs);
+                return true;
             }
-
-
 
         } else {
 
         }
-
+    
     }
 
     @Override
