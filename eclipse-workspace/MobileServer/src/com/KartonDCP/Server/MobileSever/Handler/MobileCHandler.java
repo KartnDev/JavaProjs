@@ -74,6 +74,10 @@ public class MobileCHandler implements Handler {
                 worker = new SendMessage(clientSocket, args, dbConfig);
                 worker.executeWorkSync();
             }
+            case GetUserDialogs -> {
+                worker = new SendMessage(clientSocket, args, dbConfig);
+                worker.executeWorkSync();
+            }
             case BadMethod -> {
                 logger.info("Catch the unhandled operation!");
                 clientSocket.getOutputStream().write("Unknown method".getBytes("UTF-8"));

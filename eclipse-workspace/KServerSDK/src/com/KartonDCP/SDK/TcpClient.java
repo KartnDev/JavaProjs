@@ -1,5 +1,6 @@
 package com.KartonDCP.SDK;
 
+import com.KartonDCP.SDK.Models.DialogEntity;
 import com.KartonDCP.SDK.Status.DialogRegResult;
 import com.KartonDCP.SDK.Status.RegStat;
 import com.KartonDCP.SDK.Status.RegStatusCode;
@@ -13,6 +14,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.security.KeyStore;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -207,6 +209,12 @@ public class TcpClient {
         }
         return SendStatus.CANCELED;
     }
+
+    public List<DialogEntity> getDialogs(UUID dialogUUID){
+        String request = appToken + String.format("?send_message_dialog?msg=%s&dialog_uuid=%s&user_sender=%s",
+                message, dialog.toString(), userSender.toString());
+    }
+
 
 
 

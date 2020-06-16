@@ -6,5 +6,6 @@ public enum  ProtocolMethod {
     ConnSession,
     CreateDialog,
     SendMessage,
-    GetUserDialogs
+    GetUserDialogs,
+    GetDialogMessages
 }

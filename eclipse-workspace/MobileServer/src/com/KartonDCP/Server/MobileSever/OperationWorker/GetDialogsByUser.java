@@ -29,7 +29,7 @@ public class GetDialogsByUser extends BaseWorkerAsync implements  OperationWorke
                 dbConfig.getUserRoot(),
                 dbConfig.getPassword());
 
-        if(containsOkArgs()){
+        if(args.containsKey("user_token")){
             userToken = UUID.fromString(args.get("user_token"));
 
             Dao<UserEntity, Long> dialogEntitiesDao = DaoManager.createDao(connectionSource, UserEntity.class);
@@ -47,9 +47,11 @@ public class GetDialogsByUser extends BaseWorkerAsync implements  OperationWorke
             }
 
         } else {
-
+            clientSock.getOutputStream().write("Error code: 201 - bad params".getBytes("UTF-8"));
+            connectionSource.close();
+            clientSock.close();
         }
-    
+        return false;
     }
 
     @Override
@@ -57,8 +59,5 @@ public class GetDialogsByUser extends BaseWorkerAsync implements  OperationWorke
         return false;
     }
 
-    private boolean containsOkArgs(){
-        return true;
-    }
 
 }
