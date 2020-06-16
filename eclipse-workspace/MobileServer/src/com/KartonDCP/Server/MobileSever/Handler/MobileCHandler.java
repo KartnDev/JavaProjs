@@ -75,7 +75,11 @@ public class MobileCHandler implements Handler {
                 worker.executeWorkSync();
             }
             case GetUserDialogs -> {
-                worker = new SendMessage(clientSocket, args, dbConfig);
+                worker = new GetDialogsByUser(clientSocket, args, dbConfig);
+                worker.executeWorkSync();
+            }
+            case GetDialogMessages -> {
+                worker = new GetMessagesAtDialog(clientSocket, args, dbConfig);
                 worker.executeWorkSync();
             }
             case BadMethod -> {
@@ -139,8 +143,18 @@ public class MobileCHandler implements Handler {
                         worker = new SendMessage(clientSocket, args, dbConfig);
                         worker.executeWorkSync(); // TODO Async
                     }
-                    case BadMethod -> logger.info("Catch the unhandled operation!");
-
+                    case GetUserDialogs -> {
+                        worker = new GetDialogsByUser(clientSocket, args, dbConfig);
+                        worker.executeWorkSync();
+                    }
+                    case GetDialogMessages -> {
+                        worker = new GetMessagesAtDialog(clientSocket, args, dbConfig);
+                        worker.executeWorkSync();
+                    }
+                    case BadMethod -> {
+                        logger.info("Catch the unhandled operation!");
+                        clientSocket.getOutputStream().write("Unknown method".getBytes("UTF-8"));
+                    }
                 }
             } catch (InvalidRequestException e) {
                 logger.error(e, "Was invalid operation in handler!");

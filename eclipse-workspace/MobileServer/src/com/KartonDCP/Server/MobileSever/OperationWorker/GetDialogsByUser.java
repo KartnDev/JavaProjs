@@ -1,27 +1,31 @@
 package com.KartonDCP.Server.MobileSever.OperationWorker;
 
+
 import com.KartonDCP.Server.DatabaseWorker.Config.DbConfig;
 import com.KartonDCP.Server.DatabaseWorker.Models.DialogEntity;
-import com.KartonDCP.Server.DatabaseWorker.Models.UserEntity;
+import com.google.gson.Gson;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
+import com.j256.ormlite.logger.Logger;
+import com.j256.ormlite.logger.LoggerFactory;
+import kotlin.Pair;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-public class GetDialogsByUser extends BaseWorkerAsync implements  OperationWorker {
+public class GetDialogsByUser extends BaseWorkerAsync implements OperationWorker {
 
-    protected GetDialogsByUser(Socket clientSock, Map<String, String> args, DbConfig dbConfig) {
+    private final Logger logger = LoggerFactory.getLogger(GetDialogsByUser.class);
+    private UUID userToken;
+
+    public GetDialogsByUser(Socket clientSock, Map<String, String> args, DbConfig dbConfig) {
         super(clientSock, args, dbConfig);
     }
-
-    private UUID userToken;
 
     @Override
     public boolean executeWorkSync() throws SQLException, NoSuchFieldException, IOException {
@@ -29,22 +33,29 @@ public class GetDialogsByUser extends BaseWorkerAsync implements  OperationWorke
                 dbConfig.getUserRoot(),
                 dbConfig.getPassword());
 
-        if(args.containsKey("user_token")){
+        if (args.containsKey("user_token")) {
             userToken = UUID.fromString(args.get("user_token"));
 
-            Dao<UserEntity, Long> dialogEntitiesDao = DaoManager.createDao(connectionSource, UserEntity.class);
+            Dao<DialogEntity, Long> dialogEntitiesDao = DaoManager.createDao(connectionSource, DialogEntity.class);
 
-            var query = dialogEntitiesDao.queryBuilder().where().eq("user_token", userToken).query();
+            Collection<DialogEntity> query = dialogEntitiesDao.queryBuilder().where().eq("user1Self", userToken).query();
             // TODO or double query in dialogs
-            if(query.size() == 1){
-                Collection<DialogEntity> dialogs = query.get(0).getUserDialogs();
 
-                var list = new ArrayList<DialogEntity>(dialogs);
-                ObjectOutputStream stream = new ObjectOutputStream(clientSock.getOutputStream());
 
-                stream.writeObject(dialogs);
-                return true;
+            Map<UUID, List<UUID>> dialogUsersMap = new HashMap<>();
+            for (var item: query) {
+                var listDialog = new LinkedList<UUID>();
+                listDialog.add(item.getUser1Self());
+                listDialog.add(item.getUser2());
+
+                dialogUsersMap.put(item.getDialogUUID(), listDialog);
             }
+            ObjectOutputStream out = new ObjectOutputStream(clientSock.getOutputStream());
+            out.writeObject(dialogUsersMap);
+
+
+            return true;
+
 
         } else {
             clientSock.getOutputStream().write("Error code: 201 - bad params".getBytes("UTF-8"));

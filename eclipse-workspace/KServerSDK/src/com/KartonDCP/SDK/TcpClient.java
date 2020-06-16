@@ -7,15 +7,16 @@ import com.KartonDCP.SDK.Status.RegStatusCode;
 import com.KartonDCP.SDK.Status.SendStatus;
 import com.KartonDCP.Utils.Random.RandomWork;
 import com.KartonDCP.Utils.Streams.StreamUtils;
+import com.google.gson.*;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.*;
 import java.io.*;
+import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.security.KeyStore;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -210,13 +211,39 @@ public class TcpClient {
         return SendStatus.CANCELED;
     }
 
-    public List<DialogEntity> getDialogs(UUID dialogUUID){
-        String request = appToken + String.format("?send_message_dialog?msg=%s&dialog_uuid=%s&user_sender=%s",
-                message, dialog.toString(), userSender.toString());
+    public Collection<DialogEntity> getDialogs(UUID userToken){
+        try {
+            String dialogRequest = appToken + String.format("?get_user_dialogs?user_token=%s", userToken);
+            PrintWriter printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
+            logger.info("SEND REQUEST: " + dialogRequest);
+            printWriter.println(dialogRequest);
+            printWriter.flush();
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+
+        try {
+            ObjectInputStream objectInputStream = new ObjectInputStream(innerSock.getInputStream());
+            Map<UUID, List<UUID>> deserializeMap = (Map<UUID, List<UUID>>) objectInputStream.readObject();
+
+            List<DialogEntity> result = new LinkedList<>();
+
+            deserializeMap.forEach((key, item) ->{
+                DialogEntity dialog = new DialogEntity();
+                dialog.setDialogUUID(key);
+                dialog.setUser1Self(item.get(0));
+                dialog.setUser2(item.get(1));
+
+                result.add(dialog);
+            });
+
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return new LinkedList<>();
     }
-
-
-
-
-
 }
+

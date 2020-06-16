@@ -23,7 +23,7 @@ public class GetMessagesAtDialog extends BaseWorkerAsync implements OperationWor
 
     private final Logger logger = LoggerFactory.getLogger(Register.class);
 
-    protected GetMessagesAtDialog(Socket clientSock, Map<String, String> args, DbConfig dbConfig) {
+    public GetMessagesAtDialog(Socket clientSock, Map<String, String> args, DbConfig dbConfig) {
         super(clientSock, args, dbConfig);
     }
 

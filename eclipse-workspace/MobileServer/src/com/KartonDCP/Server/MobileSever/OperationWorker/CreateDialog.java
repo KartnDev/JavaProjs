@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -38,7 +39,7 @@ public class CreateDialog extends BaseWorkerAsync implements OperationWorker {
 
         DialogEntity onCreationDialog = new DialogEntity(UUID.randomUUID(), userId1, userId2);
         if (containsOkArgs()) {
-            if (existingUser(connectionSource)) {
+            if (true) { //existingUser(connectionSource)
                 userId1 = UUID.fromString(args.get("userid1")); // friend id
                 userId2 = UUID.fromString(args.get("userid2")); // my id
             } else {
@@ -51,7 +52,7 @@ public class CreateDialog extends BaseWorkerAsync implements OperationWorker {
             var dialog = new DialogEntity(UUID.randomUUID(), userId1, userId2);
 
             // on Creation
-            if (!existsDialogBetweenTwoUsers(connectionSource)) {
+            if (true) { //!existsDialogBetweenTwoUsers(connectionSource)
                 dialogEntitiesDao.create(dialog);
                 Dao<UserEntity, Long> usersDao = DaoManager.createDao(connectionSource, UserEntity.class);
 
@@ -243,6 +244,7 @@ public class CreateDialog extends BaseWorkerAsync implements OperationWorker {
 
         if (query.size() == 1) {
             var user = query.get(0);
+            user.setUserDialogs(new ArrayList<>());
             user.getUserDialogs().add(dialog);
             dao.update(user);
             return true;

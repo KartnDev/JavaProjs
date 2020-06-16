@@ -46,6 +46,7 @@ public class ProtocolParser {
             case "reg_dialog" -> ProtocolMethod.CreateDialog;
             case "send_message_dialog"-> ProtocolMethod.SendMessage;
             case "get_user_dialogs" -> ProtocolMethod.GetUserDialogs;
+            case "get_dialog_hist" -> ProtocolMethod.GetDialogMessages;
             default -> ProtocolMethod.BadMethod;
         };
         return title;
