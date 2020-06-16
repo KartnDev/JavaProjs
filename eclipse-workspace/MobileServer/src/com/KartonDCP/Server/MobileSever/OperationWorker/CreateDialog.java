@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class CreateDialog implements OperationWorker {
@@ -25,6 +26,8 @@ public class CreateDialog implements OperationWorker {
 
     private final Logger logger = LoggerFactory.getLogger(CreateDialog.class);
 
+    private CompletableFuture asyncTaskRunner;
+
     private UUID userId1, userId2;
 
 
@@ -32,15 +35,6 @@ public class CreateDialog implements OperationWorker {
         this.clientSock = clientSock;
         this.args = args;
         this.dbConfig = dbConfig;
-
-
-        // TODO Check for valid data
-        if (containsOkArgs()) {
-
-
-        } else {
-            // TODO LOOGER: bad args
-        }
     }
 
     @Override
@@ -51,50 +45,61 @@ public class CreateDialog implements OperationWorker {
         Dao<DialogEntity, Long> dialogEntitiesDao = DaoManager.createDao(connectionSource, DialogEntity.class);
 
         DialogEntity onCreationDialog = new DialogEntity(UUID.randomUUID(), userId1, userId2);
-        if (existingUser()) {
-            userId1 = UUID.fromString(args.get("userid1")); // friend id
-            userId2 = UUID.fromString(args.get("userid2")); // my id
-        } else {
-            var msg = "one of the users doesnt exists cannot apply it for " + userId1 + " | " + userId2;
-            clientSock.getOutputStream().write(msg.getBytes("UTF8"));
-            logger.info(msg);
-            connectionSource.close();
-            return false;
-        }
-        var dialog = new DialogEntity(UUID.randomUUID(), userId1, userId2);
-
-        // on Creation
-        if (!existsDialogBetweenTwoUsers()) {
-            dialogEntitiesDao.create(dialog);
-            Dao<UserEntity, Long> usersDao = DaoManager.createDao(connectionSource, UserEntity.class);
-
-            var statusFirstInsertion = addDialogToUser(userId1, dialog, usersDao);
-            var statusSecondInsertion = addDialogToUser(userId1, dialog, usersDao);
-
-            if (statusFirstInsertion && statusSecondInsertion) {
-                // Fine
-
-                var msg = String.format("Success created new dialog UUID=%s between user1 %s and user2 %s",
-                        dialog.getDialogUUID(), userId1, userId2);
-                logger.info("Success ");
-                clientSock.getOutputStream().write(msg.getBytes("UTF8"));
-                connectionSource.close();
-                return true;
-
+        if (containsOkArgs()) {
+            if (existingUser()) {
+                userId1 = UUID.fromString(args.get("userid1")); // friend id
+                userId2 = UUID.fromString(args.get("userid2")); // my id
             } else {
-                // Rollback statement
-                var errorMsg = "Bad users: "+userId1+" | "+userId2;
-                clientSock.getOutputStream().write(errorMsg.getBytes("UTF8"));
-                logger.info(errorMsg);
-                dialogEntitiesDao.delete(dialog);
+                var msg = "one of the users doesnt exists cannot apply it for " + userId1 + " | " + userId2;
+                clientSock.getOutputStream().write(msg.getBytes("UTF8"));
+                logger.info(msg);
+                connectionSource.close();
+                return false;
             }
+            var dialog = new DialogEntity(UUID.randomUUID(), userId1, userId2);
+
+            // on Creation
+            if (!existsDialogBetweenTwoUsers()) {
+                dialogEntitiesDao.create(dialog);
+                Dao<UserEntity, Long> usersDao = DaoManager.createDao(connectionSource, UserEntity.class);
+
+                var statusFirstInsertion = addDialogToUser(userId1, dialog, usersDao);
+                var statusSecondInsertion = addDialogToUser(userId1, dialog, usersDao);
+
+                if (statusFirstInsertion && statusSecondInsertion) {
+                    // Fine
+
+                    var msg = String.format("Success created new dialog UUID=%s between user1 %s and user2 %s",
+                            dialog.getDialogUUID(), userId1, userId2);
+                    logger.info("Success ");
+                    clientSock.getOutputStream().write(msg.getBytes("UTF8"));
+                    connectionSource.close();
+                    return true;
+
+                } else {
+                    // Rollback statement
+                    var errorMsg = "Bad users: " + userId1 + " | " + userId2;
+                    clientSock.getOutputStream().write(errorMsg.getBytes("UTF8"));
+                    logger.info(errorMsg);
+                    dialogEntitiesDao.delete(dialog);
+                }
+            }
+        } else {
+            var msg = "client send bad argument keys! cannot find one of params: userid2/userid1";
+            logger.info(msg);
+            clientSock.getOutputStream().write(msg.getBytes("UTF-8"));
+            clientSock.close();
+            return false;
         }
         return false;
     }
 
     @Override
     public boolean executeWorkAsync() throws SQLException, IOException, ExecutionException, InterruptedException {
-        return false;
+        asyncTaskRunner = CompletableFuture.runAsync(() ->{
+
+        });
+        return asyncTaskRunner.isDone() && !asyncTaskRunner.isCompletedExceptionally();
     }
 
 
@@ -120,8 +125,8 @@ public class CreateDialog implements OperationWorker {
     }
 
     private boolean containsOkArgs() {
-        return args.containsKey("user1")
-                && args.containsKey("user2");
+        return args.containsKey("userid2")
+                && args.containsKey("userid1");
     }
 
     private boolean existingUser() {
