@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 
-public class Register implements OperationWorker {
+public class Register extends BaseWorkerAsync implements OperationWorker {
 
     private final Map<String, String> args;
     private final Socket clientSock;
@@ -34,9 +34,8 @@ public class Register implements OperationWorker {
     private final String password;
     private final String phoneNum;
 
-
-
     public Register(Socket clientSock, Map<String, String> args, DbConfig dbConfig) throws InvalidRequestException, IOException {
+        super(clientSock, args, dbConfig);
         this.clientSock = clientSock;
         this.dbConfig = dbConfig;
         this.args = args;
@@ -140,7 +139,7 @@ public class Register implements OperationWorker {
         var user = new UserEntity(UUID.randomUUID(), name, surname, password, phoneNum);
 
         // TODO TEST IT
-        CompletableFuture.supplyAsync(() -> {
+        asyncTask = CompletableFuture.supplyAsync(() -> {
             Dao<UserEntity, Long> usersDao = null;
             JdbcPooledConnectionSource connectionSource = null;
             try {
@@ -243,16 +242,11 @@ public class Register implements OperationWorker {
                     e.printStackTrace();
                 }
             }
-        }).get();
+        });
 
+        asyncTask.get();
 
-        return true;
-    }
-
-
-    @Override
-    public boolean cancel() {
-        return false;
+        return asyncTask.isDone() && !asyncTask.isCancelled() && !asyncTask.isCompletedExceptionally();
     }
 
     private boolean containsOkArgs() {

@@ -18,24 +18,15 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class CreateDialog implements OperationWorker {
-
-
-    private final Socket clientSock;
-    private final Map<String, String> args;
-    private final DbConfig dbConfig;
+public class CreateDialog extends BaseWorkerAsync implements OperationWorker {
 
     private final Logger logger = LoggerFactory.getLogger(CreateDialog.class);
-
-    private CompletableFuture asyncTaskRunner;
 
     private UUID userId1, userId2;
 
 
     public CreateDialog(Socket clientSock, Map<String, String> args, DbConfig dbConfig) {
-        this.clientSock = clientSock;
-        this.args = args;
-        this.dbConfig = dbConfig;
+        super(clientSock, args, dbConfig);
     }
 
     @Override
@@ -97,7 +88,7 @@ public class CreateDialog implements OperationWorker {
 
     @Override // TODO test it
     public boolean executeWorkAsync() throws SQLException, IOException, ExecutionException, InterruptedException {
-        asyncTaskRunner = CompletableFuture.runAsync(() -> {
+        asyncTask = CompletableFuture.runAsync(() -> {
             try {
                 var connectionSource = new JdbcPooledConnectionSource(dbConfig.getJdbcUrl(),
                         dbConfig.getUserRoot(),
@@ -228,9 +219,9 @@ public class CreateDialog implements OperationWorker {
             }
         });
 
-        asyncTaskRunner.get();
+        asyncTask.get();
 
-        return !asyncTaskRunner.isCancelled() && !asyncTaskRunner.isCompletedExceptionally() && asyncTaskRunner.isDone();
+        return !asyncTask.isCancelled() && !asyncTask.isCompletedExceptionally() && asyncTask.isDone();
     }
 
     private void tryExit(JdbcPooledConnectionSource jdbc) {
@@ -263,12 +254,12 @@ public class CreateDialog implements OperationWorker {
 
 
     public boolean getAsyncRuntimeStatus() {
-        return !asyncTaskRunner.isDone();
+        return !asyncTask.isDone();
     }
 
 
     public void interruptWithKill() {
-        asyncTaskRunner.cancel(true);
+        asyncTask.cancel(true);
         try {
             if (!clientSock.isClosed()) {
                 clientSock.close();
@@ -278,19 +269,6 @@ public class CreateDialog implements OperationWorker {
         }
     }
 
-    @Override
-    public boolean cancel() {
-        asyncTaskRunner.cancel(false);
-        try {
-            if (!clientSock.isClosed()) {
-                clientSock.close();
-            }
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 
     private boolean containsOkArgs() {
         return args.containsKey("userid2")

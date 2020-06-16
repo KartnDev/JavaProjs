@@ -23,22 +23,15 @@ import java.util.concurrent.ExecutionException;
  *  This class needs to get longPool server to listen events
  *  It is not an executor
  */
-public class ConnSession implements OperationWorker{
+public class ConnSession extends BaseWorkerAsync implements OperationWorker {
 
-    private final Socket clientSock;
-    private final Map<String, String> args;
-    private final DbConfig dbConfig;
 
     private final Logger logger = LoggerFactory.getLogger(ConnSession.class);
 
     private  PriorityQueue<Pair<SessionSetup, LocalTime>> sessionsPriorityQueue;
 
-    private CompletableFuture asyncTask;
-
     public ConnSession(Socket clientSock, Map<String, String> args, DbConfig dbConfig){
-        this.clientSock = clientSock;
-        this.args = args;
-        this.dbConfig = dbConfig;
+        super(clientSock, args, dbConfig);
     }
 
     public OperationWorker ApproveSessions(PriorityQueue<Pair<SessionSetup, LocalTime>> sessions){
@@ -77,19 +70,5 @@ public class ConnSession implements OperationWorker{
         return asyncTask.isDone() && !asyncTask.isCompletedExceptionally();
     }
 
-    @Override
-    public boolean cancel() {
-        if(asyncTask != null){
-            asyncTask.cancel(false);
-            try {
-                if(!clientSock.isClosed()){
-                    clientSock.close();
-                }
-                return true;
-            } catch (IOException e) {
-                logger.error(e, "Cannot close socket in connSession");
-            }
-        }
-        return false;
-    }
+
 }

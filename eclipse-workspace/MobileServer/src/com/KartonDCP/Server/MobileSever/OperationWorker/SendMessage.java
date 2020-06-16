@@ -21,12 +21,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-public class SendMessage implements OperationWorker{
+public class SendMessage extends BaseWorkerAsync implements OperationWorker{
 
-
-    private final Map<String, String> args;
-    private final Socket clientSock;
-    private final DbConfig dbConfig;
     private final Logger logger = LoggerFactory.getLogger(Register.class);
 
     private final String message;
@@ -35,9 +31,7 @@ public class SendMessage implements OperationWorker{
 
 
     public SendMessage(Socket clientSock, Map<String, String> args, DbConfig dbConfig) throws InvalidRequestException {
-        this.clientSock = clientSock;
-        this.dbConfig = dbConfig;
-        this.args = args;
+        super(clientSock, args, dbConfig);
 
         if (containsOkArgs()) {
             message = args.get("msg");
@@ -85,11 +79,6 @@ public class SendMessage implements OperationWorker{
 
     @Override
     public boolean executeWorkAsync() throws SQLException, IOException, ExecutionException, InterruptedException {
-        return false;
-    }
-
-    @Override
-    public boolean cancel() {
         return false;
     }
 
