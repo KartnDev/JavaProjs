@@ -1,5 +1,6 @@
 package com.KartonDCP.Server.DatabaseWorker.Mapper;
 
+import com.KartonDCP.Server.DatabaseWorker.Models.MessageEntity;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;

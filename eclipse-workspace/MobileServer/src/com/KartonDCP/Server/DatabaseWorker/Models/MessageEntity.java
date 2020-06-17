@@ -5,7 +5,6 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.sql.Date;
-import java.time.LocalTime;
 import java.util.UUID;
 
 
@@ -18,8 +17,8 @@ public class MessageEntity {
 
     }
 
-    public MessageEntity(DialogEntity dialogEntity, UUID from, UUID to, String messageBody, Date sendTime){
-
+    public MessageEntity(UUID fromDialog, DialogEntity dialogEntity, UUID from, UUID to, String messageBody, String sendTime){
+        this.fromDialog = fromDialog;
         this.dialogEntity = dialogEntity;
         this.from = from;
         this.to = to;
@@ -27,7 +26,8 @@ public class MessageEntity {
         this.sendTime = sendTime;
     }
 
-
+    @DatabaseField(canBeNull = false, dataType = DataType.UUID)
+    private UUID fromDialog;
 
     @DatabaseField(foreign=true)
     private DialogEntity dialogEntity;
@@ -44,8 +44,8 @@ public class MessageEntity {
     @DatabaseField(canBeNull = false)
     private String messageBody;
 
-    @DatabaseField(dataType = DataType.DATE)
-    private Date sendTime;
+    @DatabaseField(dataType = DataType.STRING)
+    private String sendTime;
 
 
     public DialogEntity getDialogEntity() {
@@ -88,11 +88,19 @@ public class MessageEntity {
         this.messageBody = messageBody;
     }
 
-    public Date getSendTime() {
+    public String getSendTime() {
         return sendTime;
     }
 
-    public void setSendTime(Date sendTime) {
+    public void setSendTime(String sendTime) {
         this.sendTime = sendTime;
+    }
+
+    public UUID getFromDialog() {
+        return fromDialog;
+    }
+
+    public void setFromDialog(UUID fromDialog) {
+        this.fromDialog = fromDialog;
     }
 }

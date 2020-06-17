@@ -39,7 +39,6 @@ public class GetDialogsByUser extends BaseWorkerAsync implements OperationWorker
             Dao<DialogEntity, Long> dialogEntitiesDao = DaoManager.createDao(connectionSource, DialogEntity.class);
 
             Collection<DialogEntity> query = dialogEntitiesDao.queryBuilder().where().eq("user1Self", userToken).query();
-            // TODO or double query in dialogs
 
 
             Map<UUID, List<UUID>> dialogUsersMap = new HashMap<>();

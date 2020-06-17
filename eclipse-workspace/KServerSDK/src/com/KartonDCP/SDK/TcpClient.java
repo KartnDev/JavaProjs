@@ -1,6 +1,7 @@
 package com.KartonDCP.SDK;
 
 import com.KartonDCP.SDK.Models.DialogEntity;
+import com.KartonDCP.SDK.Models.MessageEntity;
 import com.KartonDCP.SDK.Status.DialogRegResult;
 import com.KartonDCP.SDK.Status.RegStat;
 import com.KartonDCP.SDK.Status.RegStatusCode;
@@ -245,5 +246,42 @@ public class TcpClient {
         }
         return new LinkedList<>();
     }
+
+    public Collection<MessageEntity> getMessages(UUID dialogToken){
+        try {
+            String dialogRequest = appToken + String.format("?get_dialog_hist?dialog_token=%s", dialogToken);
+            PrintWriter printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(innerSock.getOutputStream())));
+            logger.info("SEND REQUEST: " + dialogRequest);
+            printWriter.println(dialogRequest);
+            printWriter.flush();
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+
+        try {
+            ObjectInputStream objectInputStream = new ObjectInputStream(innerSock.getInputStream());
+            Map<Integer, List<String>>  deserializeMap = (HashMap<Integer, List<String>>) objectInputStream.readObject();
+
+            List<MessageEntity> result = new LinkedList<>();
+
+            deserializeMap.forEach((key, item) ->{
+                MessageEntity msg = new MessageEntity();
+                msg.setFromDialog(UUID.fromString(item.get(0)));
+                msg.setFrom(UUID.fromString(item.get(1)));
+                msg.setTo(UUID.fromString(item.get(2)));
+                msg.setMessageBody(item.get(3));
+
+                result.add(msg);
+            });
+
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return new LinkedList<>();
+    }
+
 }
 

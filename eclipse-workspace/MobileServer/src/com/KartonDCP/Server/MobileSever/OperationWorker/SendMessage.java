@@ -15,7 +15,6 @@ import java.net.Socket;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
@@ -58,7 +57,12 @@ public class SendMessage extends BaseWorkerAsync implements OperationWorker{
         if (query.size() == 1) {
             var dialog = query.get(0);
             var userReceiver = dialog.getUser1Self() == userSender ? dialog.getUser1Self() : dialog.getUser2();
-            var messageNew = new MessageEntity(dialog, userSender, userReceiver, message, Date.valueOf(LocalDate.now()));
+            var messageNew = new MessageEntity(dialogUUID,
+                    dialog,
+                    userSender,
+                    userReceiver,
+                    message,
+                    Date.valueOf(LocalDate.now()).toString());
 
             dialog.setMessages(new LinkedList<>());
             dialog.getMessages().add(messageNew);

@@ -1,7 +1,7 @@
 package com.KartonDCP.Server.MobileSever.OperationWorker;
 
 import com.KartonDCP.Server.DatabaseWorker.Config.DbConfig;
-import com.KartonDCP.Server.DatabaseWorker.Models.DialogEntity;
+import com.KartonDCP.Server.DatabaseWorker.Models.MessageEntity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
@@ -12,22 +12,18 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 
-
-public class GetMessagesAtDialog extends BaseWorkerAsync implements OperationWorker{
+public class GetMessagesAtDialog extends BaseWorkerAsync implements OperationWorker {
 
     private final Logger logger = LoggerFactory.getLogger(Register.class);
+    private UUID dialogToken;
 
     public GetMessagesAtDialog(Socket clientSock, Map<String, String> args, DbConfig dbConfig) {
         super(clientSock, args, dbConfig);
     }
-
-    private UUID dialogToken;
 
     @Override
     public boolean executeWorkSync() throws SQLException, NoSuchFieldException, IOException {
@@ -35,27 +31,34 @@ public class GetMessagesAtDialog extends BaseWorkerAsync implements OperationWor
                 dbConfig.getUserRoot(),
                 dbConfig.getPassword());
 
-        if (args.containsKey(" ")) {
+        if (args.containsKey("dialog_token")) {
             dialogToken = UUID.fromString(args.get("dialog_token"));
 
-            Dao<DialogEntity, Long> dialogEntitiesDao = DaoManager.createDao(connectionSource, DialogEntity.class);
+            Dao<MessageEntity, Long> messageEntityDao = DaoManager.createDao(connectionSource, MessageEntity.class);
 
-            var result = dialogEntitiesDao.queryBuilder().where().eq("dialogUUID", dialogToken).query();
+            var result = messageEntityDao.queryBuilder().where().eq("fromDialog", dialogToken).query();
+            if (result != null) {
 
-            if(result.size() == 1){
-                var queryList = result.get(0).getMessages();
+                Map<Integer, List<String>> map = new HashMap<>();
 
-                if(queryList != null){
-                    ObjectOutputStream stream = new ObjectOutputStream(clientSock.getOutputStream());
-                    stream.writeObject(queryList);
-                } else {
-                    logger.info("Messages is null");
+                for (var value : result) {
+
+                    var list = new LinkedList<String>();
+                    list.add(value.getFromDialog().toString());
+                    list.add(value.getFrom().toString());
+                    list.add(value.getTo().toString());
+                    list.add(value.getMessageBody());
+
+                    map.put(value.getId(), list);
                 }
 
+
+                ObjectOutputStream stream = new ObjectOutputStream(clientSock.getOutputStream());
+                stream.writeObject(map);
             } else {
-                clientSock.getOutputStream().write("Error code: 222 - dialog not exists".getBytes("UTF-8"));
-                logger.info("Error code: 222 - dialog not exists");
+                logger.info("Messages is null");
             }
+
 
         } else {
             clientSock.getOutputStream().write("Error code: 201 - bad params".getBytes("UTF-8"));
@@ -69,7 +72,6 @@ public class GetMessagesAtDialog extends BaseWorkerAsync implements OperationWor
     public boolean executeWorkAsync() throws SQLException, IOException, ExecutionException, InterruptedException {
         return false;
     }
-
 
 
 }

@@ -7,7 +7,6 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.sql.Date;
 import java.util.UUID;
 
-
 @DatabaseTable(tableName = "messages")
 public class MessageEntity {
 
@@ -17,8 +16,8 @@ public class MessageEntity {
 
     }
 
-    public MessageEntity(DialogEntity dialogEntity, UUID from, UUID to, String messageBody, Date sendTime){
-
+    public MessageEntity(UUID fromDialog, DialogEntity dialogEntity, UUID from, UUID to, String messageBody, Date sendTime){
+        this.fromDialog = fromDialog;
         this.dialogEntity = dialogEntity;
         this.from = from;
         this.to = to;
@@ -26,7 +25,8 @@ public class MessageEntity {
         this.sendTime = sendTime;
     }
 
-
+    @DatabaseField(canBeNull = false, dataType = DataType.UUID)
+    private UUID fromDialog;
 
     @DatabaseField(foreign=true)
     private DialogEntity dialogEntity;
@@ -93,5 +93,13 @@ public class MessageEntity {
 
     public void setSendTime(Date sendTime) {
         this.sendTime = sendTime;
+    }
+
+    public UUID getFromDialog() {
+        return fromDialog;
+    }
+
+    public void setFromDialog(UUID fromDialog) {
+        this.fromDialog = fromDialog;
     }
 }
